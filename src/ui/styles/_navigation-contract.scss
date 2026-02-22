@@ -11,6 +11,10 @@
       text-decoration: none;
     }
 
+    &.active-link {
+      color: var(--color-text-primary);
+    }
+
     &.active-link:before {
       content: '';
       position: absolute;

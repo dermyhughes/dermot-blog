@@ -51,7 +51,8 @@ const normalizedCurrentPath = ensureTrailingSlash(currentPath);
     }
 
     const isHome = internalPath === '/';
-    const isHomeActive = isHome && (normalizedCurrentPath === '/' || normalizedCurrentPath.startsWith('/page/'));
+    const isHomeActive =
+      isHome && (normalizedCurrentPath === '/' || normalizedCurrentPath.startsWith('/page/'));
     const isSectionActive =
       !isHome &&
       (normalizedCurrentPath === internalPath ||
@@ -77,12 +78,26 @@ const normalizedCurrentPath = ensureTrailingSlash(currentPath);
   (() => {
     const enhanceActiveNavLinks = () => {
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const pink = getComputedStyle(document.documentElement).getPropertyValue('--color-pink').trim();
+      const pink = getComputedStyle(document.documentElement)
+        .getPropertyValue('--color-pink')
+        .trim();
       const color = pink || '#ff4fa3';
       const variants = [
-        { strokeWidth: 5.6, padding: [0, 2, 0, 1] as [number, number, number, number], duration: 420 },
-        { strokeWidth: 6.2, padding: [1, 1, 0, 0] as [number, number, number, number], duration: 520 },
-        { strokeWidth: 5.2, padding: [0, 1, 1, 2] as [number, number, number, number], duration: 470 },
+        {
+          strokeWidth: 5.6,
+          padding: [0, 2, 0, 1] as [number, number, number, number],
+          duration: 420,
+        },
+        {
+          strokeWidth: 6.2,
+          padding: [1, 1, 0, 0] as [number, number, number, number],
+          duration: 520,
+        },
+        {
+          strokeWidth: 5.2,
+          padding: [0, 1, 1, 2] as [number, number, number, number],
+          duration: 470,
+        },
       ];
 
       const activeLinks = Array.from(
@@ -90,13 +105,17 @@ const normalizedCurrentPath = ensureTrailingSlash(currentPath);
       ).filter((link) => link.dataset.navHighlightEnhanced !== 'true');
 
       activeLinks.forEach((link, index) => {
-        if (link.getClientRects().length === 0 || link.offsetWidth === 0 || link.offsetHeight === 0) {
+        if (
+          link.getClientRects().length === 0 ||
+          link.offsetWidth === 0 ||
+          link.offsetHeight === 0
+        ) {
           return;
         }
 
         const variant = variants[index % variants.length];
         const annotation = annotate(link, {
-          type: 'underline',
+          type: 'highlight',
           color,
           animate: !prefersReducedMotion,
           animationDuration: variant.duration,
@@ -129,7 +148,7 @@ const normalizedCurrentPath = ensureTrailingSlash(currentPath);
 </script>
 
 <style is:global lang='scss'>
-@use '../styles/navigation-contract' as nav;
+  @use '../styles/navigation-contract' as nav;
 
-@include nav.nav-item-contract;
+  @include nav.nav-item-contract;
 </style>
