@@ -10,7 +10,9 @@ const { title, descriptionParts } = Astro.props;
 ---
 
 <section class='site-banner' aria-labelledby='site-banner-title'>
-  <div class='site-banner-bg' aria-hidden='true'></div>
+  <div class='site-banner-bg-clip' aria-hidden='true'>
+    <div class='site-banner-bg'></div>
+  </div>
   <div class='site-banner-bokeh' aria-hidden='true'></div>
   <div class='site-banner-focus' aria-hidden='true'></div>
   <div class='site-banner-content'>
@@ -69,13 +71,31 @@ const { title, descriptionParts } = Astro.props;
       if (highlightNodes.length === 0) return;
 
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const pink = getComputedStyle(document.documentElement).getPropertyValue('--color-pink').trim();
+      const pink = getComputedStyle(document.documentElement)
+        .getPropertyValue('--color-pink')
+        .trim();
       const color = pink || '#ff4fa3';
       const variants = [
-        { strokeWidth: 7.5, padding: [0, 2, 1, 1] as [number, number, number, number], duration: 700 },
-        { strokeWidth: 8.25, padding: [1, 1, 2, 0] as [number, number, number, number], duration: 860 },
-        { strokeWidth: 6.75, padding: [0, 1, 2, 2] as [number, number, number, number], duration: 780 },
-        { strokeWidth: 7.9, padding: [1, 2, 1, 0] as [number, number, number, number], duration: 920 },
+        {
+          strokeWidth: 7.5,
+          padding: [0, 2, 1, 1] as [number, number, number, number],
+          duration: 700,
+        },
+        {
+          strokeWidth: 8.25,
+          padding: [1, 1, 2, 0] as [number, number, number, number],
+          duration: 860,
+        },
+        {
+          strokeWidth: 6.75,
+          padding: [0, 1, 2, 2] as [number, number, number, number],
+          duration: 780,
+        },
+        {
+          strokeWidth: 7.9,
+          padding: [1, 2, 1, 0] as [number, number, number, number],
+          duration: 920,
+        },
       ];
 
       let nextStartDelay = 450;
@@ -124,18 +144,26 @@ const { title, descriptionParts } = Astro.props;
     --banner-zoom-progress: 0;
     --banner-parallax-y: 0px;
     --banner-bokeh-opacity: calc(0.08 + var(--banner-progress, 0) * 0.42);
+    --banner-bleed-x: max(12%, calc(50vw - 50%));
     position: relative;
     isolation: isolate;
-    overflow: hidden;
-    overflow: clip;
+    overflow: visible;
     padding: 5vw 0;
   }
 
+  .site-banner-bg-clip,
   .site-banner-bg,
   .site-banner-bokeh,
   .site-banner-focus {
     position: absolute;
     pointer-events: none;
+  }
+
+  .site-banner-bg-clip {
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    overflow: clip;
   }
 
   .site-banner-bg {
@@ -144,6 +172,7 @@ const { title, descriptionParts } = Astro.props;
     background-size: min(80vw, 100%);
     background-repeat: no-repeat;
     background-position: center;
+    background-attachment: fixed;
     z-index: 0;
     opacity: calc(1 - var(--banner-progress, 0) * 0.12);
     filter: blur(calc(var(--banner-progress, 0) * 24px))
@@ -163,7 +192,10 @@ const { title, descriptionParts } = Astro.props;
   }
 
   .site-banner-bokeh {
-    inset: -18% -12% -44%;
+    top: -18%;
+    right: calc(-1 * var(--banner-bleed-x));
+    bottom: -44%;
+    left: calc(-1 * var(--banner-bleed-x));
     z-index: 1;
     opacity: var(--banner-bokeh-opacity);
     mix-blend-mode: screen;
@@ -304,7 +336,10 @@ const { title, descriptionParts } = Astro.props;
   }
 
   .site-banner-focus {
-    inset: 0;
+    top: 0;
+    right: calc(50% - 50vw);
+    bottom: 0;
+    left: calc(50% - 50vw);
     z-index: 2;
     opacity: calc(0.08 + var(--banner-progress, 0) * 0.32);
     background: radial-gradient(
@@ -520,6 +555,5 @@ const { title, descriptionParts } = Astro.props;
         animation: none;
       }
     }
-
   }
 </style>
