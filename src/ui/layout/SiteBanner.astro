@@ -126,7 +126,8 @@ const { title, descriptionParts } = Astro.props;
     --banner-bokeh-opacity: calc(0.08 + var(--banner-progress, 0) * 0.42);
     position: relative;
     isolation: isolate;
-    overflow: visible;
+    overflow: hidden;
+    overflow: clip;
     padding: 5vw 0;
   }
 
@@ -140,7 +141,7 @@ const { title, descriptionParts } = Astro.props;
   .site-banner-bg {
     inset: -14% -10% -36%;
     background-image: url('/images/hexagon.svg');
-    background-size: 80vw;
+    background-size: min(80vw, 100%);
     background-repeat: no-repeat;
     background-position: center;
     z-index: 0;
