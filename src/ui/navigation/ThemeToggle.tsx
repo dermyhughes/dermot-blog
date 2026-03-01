@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useId, useState } from 'react';
 import {
   applyTheme,
   getInitialTheme,
@@ -9,26 +9,23 @@ import {
 import type { ThemePreference } from '../../utils/theme';
 import styles from './ThemeToggle.module.scss';
 
-function ThemeToggle() {
-  const [theme, setTheme] = useState<ThemePreference>('light');
+const ThemeToggle = React.memo(() => {
   const clipPathId = `theme-toggle-classic-cutout-${useId().replace(/:/g, '')}`;
+  const [theme, setTheme] = useState<ThemePreference>('light');
 
   useEffect(() => {
     const rootTheme = document.documentElement.dataset.theme;
-    if (rootTheme === 'light' || rootTheme === 'dark') {
-      setTheme(rootTheme);
-      return;
-    }
+    const storedTheme = getStoredTheme();
 
-    const initialTheme = getInitialTheme();
+    const initialTheme =
+      rootTheme === 'light' || rootTheme === 'dark' ? rootTheme : storedTheme ?? getInitialTheme();
+
     applyTheme(initialTheme);
     setTheme(initialTheme);
   }, []);
 
   useEffect(() => {
-    const hasStoredPreference = Boolean(getStoredTheme());
-
-    if (hasStoredPreference) {
+    if (getStoredTheme()) {
       return () => {};
     }
 
@@ -40,22 +37,24 @@ function ThemeToggle() {
     return () => unsubscribe();
   }, []);
 
-  const label = useMemo(() => `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`, [theme]);
+  const label = `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`;
 
-  const handleToggle = () => {
-    setTheme((currentTheme) => {
-      const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  const handleToggle = useCallback(() => {
+    setTheme((prev) => {
+      const nextTheme = prev === 'dark' ? 'light' : 'dark';
       persistTheme(nextTheme);
       applyTheme(nextTheme);
       return nextTheme;
     });
-  };
+  }, []);
 
   return (
     <div className={`${styles.wrapper} theme-toggle-wrapper`} data-theme={theme}>
       <button
         type='button'
-        className={`${styles.button} theme-toggle ${theme === 'dark' ? 'theme-toggle--toggled' : ''}`}
+        className={`${styles.button} theme-toggle ${
+          theme === 'dark' ? 'theme-toggle--toggled' : ''
+        }`}
         onClick={handleToggle}
         aria-label={label}
         title={label}
@@ -91,6 +90,6 @@ function ThemeToggle() {
       </button>
     </div>
   );
-}
+});
 
 export default ThemeToggle;
