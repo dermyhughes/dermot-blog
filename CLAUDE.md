@@ -16,7 +16,17 @@ Required before running dev or build:
 ```
 GHOST_API_URL=https://blog.dermothughes.com
 GHOST_CONTENT_API_KEY=<key>
-SITEURL=https://dermothughes.com  # optional, used for canonical URLs
+SITEURL=https://dermothughes.com          # optional, used for canonical URLs
+GHOST_ALLOW_OFFLINE_FALLBACK=true         # optional, allows build when Ghost unreachable (dev mode enables this automatically)
+```
+
+Alternatively, create a `.ghost.json` (or `.ghost`) file in the project root with `development` / `production` keys — `ghost.ts` reads this as a fallback to env vars:
+
+```json
+{
+  "development": { "apiUrl": "...", "contentApiKey": "..." },
+  "production":  { "apiUrl": "...", "contentApiKey": "..." }
+}
 ```
 
 ## Commands
@@ -66,11 +76,11 @@ All URLs use trailing slashes (enforced in `astro.config.mjs`).
 ```
 src/
 ├── pages/          # Astro routing (thin, delegate to ui/ components)
-├── components/     # Page-level wrapper components (Layout, etc.)
-├── ui/             # Feature-organised UI
-│   ├── foundations/   # Design tokens (tokens.scss), reset, base typography
-│   ├── layout/        # SiteHeader, SiteFooter, SiteBanner, ArticleContent
-│   ├── navigation/    # Navigation (Astro), ThemeToggle (React)
+├── components/     # Legacy shims only — re-export from ui/ for backwards compat; do not add new components here
+├── ui/             # All UI lives here — add new components in the appropriate subdirectory
+│   ├── foundations/   # Design tokens (tokens.scss), reset, base typography, Koenig editor styles
+│   ├── layout/        # SiteHeader, SiteFooter, SiteBanner, TagHeader, ArticleContent
+│   ├── navigation/    # Navigation (Astro), ThemeToggle (React), SocialLinks
 │   ├── posts/         # PostFeed, PostCard, PostArticle
 │   └── pagination/    # Pagination component
 ├── lib/            # Business logic, Ghost API, types
@@ -80,6 +90,8 @@ src/
 Pages are thin — they call Ghost API functions and pass data down to `ui/` components.
 
 Only `ThemeToggle` uses React (`client:load`). Everything else is Astro or plain HTML/SCSS.
+
+An RSS feed is generated at build time via `src/pages/rss.ts`.
 
 ### Theming
 
