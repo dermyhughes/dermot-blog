@@ -37,9 +37,7 @@ const generateItem = (post: GhostPost) => {
   const customElements: string[] = [];
 
   if (post.feature_image) {
-    customElements.push(
-      `<media:content url="${escapeXml(post.feature_image)}" medium="image" />`,
-    );
+    customElements.push(`<media:content url="${escapeXml(post.feature_image)}" medium="image" />`);
 
     htmlContent('p').first().before(`<img src="${post.feature_image}" />`);
     htmlContent('img').attr('alt', post.title);
@@ -76,7 +74,9 @@ export async function GET() {
   <description>${escapeXml(siteDescription)}</description>
   <generator>Ghost 2.9</generator>
   <link>${escapeXml(`${siteUrl}/`)}</link>
-  <atom:link href="${escapeXml(`${siteUrl}/rss/`)}" rel="self" type="application/rss+xml" xmlns:atom="http://www.w3.org/2005/Atom" />
+  <atom:link href="${escapeXml(
+    `${siteUrl}/rss/`,
+  )}" rel="self" type="application/rss+xml" xmlns:atom="http://www.w3.org/2005/Atom" />
   <image>
     <url>${escapeXml(withSiteUrl(`/${siteConfig.siteIcon}`) || '')}</url>
     <title>${escapeXml(siteTitle)}</title>

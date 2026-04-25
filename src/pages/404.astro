@@ -2,6 +2,7 @@
 import Layout from '../components/Layout.astro';
 import MetaData from '../components/meta/MetaData.astro';
 import ArticleContent from '../ui/layout/ArticleContent.astro';
+import CatImage from '../ui/layout/CatImage';
 import { getGhostSettings } from '../lib/ghost';
 import { canonicalFromPath } from '../lib/site';
 
@@ -25,9 +26,9 @@ const canonical = canonicalFromPath('/404/');
         <p>
           Huh. It looks like that page cannot be found. You can <a href='/'>return home</a> to start over.
         </p>
-        <p>Here is a cute picture to make it up to you.</p>
+        <p>Here is a cat to make it up to you.</p>
       </Fragment>
-      <img class='random-image' alt='Random cute animal' src='https://source.unsplash.com/640x480?cute-animals' />
+      <CatImage client:load />
     </ArticleContent>
   </div>
 </Layout>

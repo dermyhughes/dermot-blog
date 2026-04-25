@@ -14,12 +14,14 @@ export const getPostTagSlug = (post: GhostPost) => post.primary_tag?.slug || 'po
 
 export const getPostPath = (post: GhostPost) => `/${getPostTagSlug(post)}/${post.slug}/`;
 
-export const getHomePagePath = (pageNumber: number) => (pageNumber <= 1 ? '/' : `/page/${pageNumber}/`);
+export const getHomePagePath = (pageNumber: number) =>
+  pageNumber <= 1 ? '/' : `/page/${pageNumber}/`;
 
 export const getTagPagePath = (tagSlug: string, pageNumber: number) =>
   pageNumber <= 1 ? `/${tagSlug}/` : `/${tagSlug}/page/${pageNumber}/`;
 
-export const getPublicTags = (tags: GhostTag[] = []) => tags.filter((tag) => tag.visibility !== 'internal');
+export const getPublicTags = (tags: GhostTag[] = []) =>
+  tags.filter((tag) => tag.visibility !== 'internal');
 
 export const formatReadingTime = (post: GhostPost) => {
   if (typeof post.reading_time === 'number' && post.reading_time > 0) {

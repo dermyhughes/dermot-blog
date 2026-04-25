@@ -114,7 +114,9 @@ const getErrorCode = (error: unknown): string | undefined => {
 
 const isRecoverableGhostNetworkError = (error: unknown) => {
   const code = getErrorCode(error);
-  return code === 'ENOTFOUND' || code === 'EAI_AGAIN' || code === 'ECONNREFUSED' || code === 'ETIMEDOUT';
+  return (
+    code === 'ENOTFOUND' || code === 'EAI_AGAIN' || code === 'ECONNREFUSED' || code === 'ETIMEDOUT'
+  );
 };
 
 const logGhostFallback = (resource: string, error: unknown) => {
@@ -126,7 +128,9 @@ const logGhostFallback = (resource: string, error: unknown) => {
   const code = getErrorCode(error);
   const message = error instanceof Error ? error.message : String(error);
   process.stderr.write(
-    `[ghost] Falling back to empty ${resource} because Ghost API is unreachable${code ? ` (${code})` : ''}: ${message}\n`,
+    `[ghost] Falling back to empty ${resource} because Ghost API is unreachable${
+      code ? ` (${code})` : ''
+    }: ${message}\n`,
   );
 };
 
