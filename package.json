@@ -62,7 +62,7 @@
     "@tryghost/content-api": "^1.11.20",
     "@tryghost/helpers": "1.1.74",
     "cheerio": "1.0.0-rc.11",
-    "lodash": "4.17.23",
+    "lodash": "4.18.1",
     "prismjs": "^1.30.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
