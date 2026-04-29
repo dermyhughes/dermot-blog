@@ -107,3 +107,17 @@ Theme (light/dark) is stored in `localStorage` under the key `preferred-theme` a
 ### Deployment
 
 Netlify builds with `NODE_ENV=production npm run build`, publishing `dist/`. Ghost webhooks trigger Netlify rebuilds on content changes.
+
+## Agent skills
+
+### Issue tracker
+
+Issues tracked via GitHub Issues using the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+All five canonical labels use their default names (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context layout — one `CONTEXT.md` at the repo root with `docs/adr/` for architectural decisions. See `docs/agents/domain.md`.
