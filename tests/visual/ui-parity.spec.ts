@@ -87,6 +87,21 @@ test('captures route parity screenshots', async ({ page }, testInfo) => {
     });
   });
 
+  // The 404 page fetches a random cat — pin it for deterministic snapshots.
+  await page.route('https://api.thecatapi.com/**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        {
+          url: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="640" height="480"%3E%3Crect width="640" height="480" fill="%23241a3d"/%3E%3C/svg%3E',
+          width: 640,
+          height: 480,
+        },
+      ]),
+    });
+  });
+
   const targets = await discoverTargets(page);
 
   for (const target of targets) {

@@ -7,553 +7,529 @@ interface Props {
 }
 
 const { title, descriptionParts } = Astro.props;
+
+// The marquee roster — every hat worn, in increasing order of honesty.
+const marqueeRoles = [
+  'front-end web developer',
+  'designer',
+  'ux engineer',
+  'design systems engineer',
+  'pixel pusher',
+  'interface architect',
+  'component librarian',
+  'accessibility advocate',
+  'css whisperer',
+  'token wrangler',
+  'keyframe choreographer',
+  'semantic html purist',
+  'gradient gardener',
+  'professional div aligner',
+];
+
+// Two identical groups make the loop seamless; each group is repeated
+// wide enough to always exceed the viewport, so the track never runs dry.
+const marqueeGroup = Array.from({ length: 2 }).flatMap(() => marqueeRoles);
 ---
 
 <section class='site-banner' aria-labelledby='site-banner-title'>
-  <div class='site-banner-bg-clip' aria-hidden='true'>
-    <div class='site-banner-bg'></div>
-  </div>
-  <div class='site-banner-bokeh' aria-hidden='true'></div>
-  <div class='site-banner-focus' aria-hidden='true'></div>
-  <div class='site-banner-content'>
-    <h1 id='site-banner-title' class='site-banner-title three-d' data-line={title}>
+  <div class='site-banner-floor' aria-hidden='true'></div>
+  <div class='site-banner-horizon' aria-hidden='true'></div>
+
+  <span class='site-banner-annotation site-banner-annotation--left spec-label' aria-hidden='true'>
+    [ index <b>/ 001</b> ]
+  </span>
+  <span class='site-banner-annotation site-banner-annotation--right spec-label' aria-hidden='true'>
+    [ v3.0 — <b>vapour</b> ]
+  </span>
+
+  <div class='site-banner-stage container'>
+    <h1 id='site-banner-title' class='site-banner-title' data-line={title}>
       {title}
     </h1>
 
-    <div class='site-banner-desc'>
-      {descriptionParts.map((item) => <span class='highlight-container'>{item}.</span>)}
+    {
+      descriptionParts.length > 0 && (
+        <p class='site-banner-desc'>
+          {descriptionParts.map((item, index) => (
+            <>
+              <span class='site-banner-desc-part'>{item}</span>
+              {index < descriptionParts.length - 1 && (
+                <span class='site-banner-desc-sep' aria-hidden='true'>
+                  /
+                </span>
+              )}
+            </>
+          ))}
+        </p>
+      )
+    }
+
+    <div class='site-banner-social'>
+      <SocialLinks isHome />
     </div>
-    <SocialLinks isHome />
+  </div>
+
+  <div class='site-banner-scroll spec-label' aria-hidden='true'>scroll</div>
+
+  <div class='site-marquee' aria-hidden='true'>
+    <div class='site-marquee-track'>
+      <span class='site-marquee-group'>
+        {marqueeGroup.map((item) => (
+          <span class='site-marquee-item'>
+            {item}
+            <span class='site-marquee-star'>✦</span>
+          </span>
+        ))}
+      </span>
+      <span class='site-marquee-group'>
+        {marqueeGroup.map((item) => (
+          <span class='site-marquee-item'>
+            {item}
+            <span class='site-marquee-star'>✦</span>
+          </span>
+        ))}
+      </span>
+    </div>
   </div>
 </section>
 
-<script>
-  import { annotate } from 'rough-notation';
-
-  (() => {
-    const banner = document.querySelector<HTMLElement>('.site-banner');
-
-    if (!banner) return;
-
-    const updateBannerProgress = () => {
-      const rect = banner.getBoundingClientRect();
-      const bannerHeight = rect.height;
-      const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
-      const progress = Math.max(0, Math.min(1, scrollTop / (bannerHeight * 0.9)));
-      const zoomProgress = Math.pow(progress, 1.85);
-      const parallaxOffset = Math.max(-40, Math.min(40, -rect.top * 0.2));
-
-      banner.style.setProperty('--banner-progress', progress.toString());
-      banner.style.setProperty('--banner-zoom-progress', zoomProgress.toString());
-      banner.style.setProperty('--banner-parallax-y', `${parallaxOffset}px`);
-    };
-
-    let ticking = false;
-    const queueBannerProgressUpdate = () => {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(() => {
-        updateBannerProgress();
-        ticking = false;
-      });
-    };
-
-    window.addEventListener('scroll', queueBannerProgressUpdate, { passive: true });
-    window.addEventListener('resize', queueBannerProgressUpdate, { passive: true });
-    window.addEventListener('load', queueBannerProgressUpdate);
-    updateBannerProgress();
-
-    const initRoughHighlights = () => {
-      const highlightNodes = Array.from(
-        banner.querySelectorAll<HTMLElement>('.highlight-container'),
-      ).filter((node) => node.dataset.highlightEnhanced !== 'true');
-
-      if (highlightNodes.length === 0) return;
-
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const pink = getComputedStyle(document.documentElement)
-        .getPropertyValue('--color-pink')
-        .trim();
-      const color = pink || '#ff4fa3';
-      const variants = [
-        {
-          strokeWidth: 7.5,
-          padding: [0, 2, 1, 1] as [number, number, number, number],
-          duration: 700,
-        },
-        {
-          strokeWidth: 8.25,
-          padding: [1, 1, 2, 0] as [number, number, number, number],
-          duration: 860,
-        },
-        {
-          strokeWidth: 6.75,
-          padding: [0, 1, 2, 2] as [number, number, number, number],
-          duration: 780,
-        },
-        {
-          strokeWidth: 7.9,
-          padding: [1, 2, 1, 0] as [number, number, number, number],
-          duration: 920,
-        },
-      ];
-
-      let nextStartDelay = 450;
-      const strokeGap = 90;
-
-      highlightNodes.forEach((node, index) => {
-        const variant = variants[index % variants.length];
-        const annotation = annotate(node, {
-          type: 'underline',
-          color,
-          multiline: true,
-          animate: !prefersReducedMotion,
-          animationDuration: variant.duration,
-          strokeWidth: variant.strokeWidth,
-          padding: variant.padding,
-          iterations: 1,
-        });
-
-        node.dataset.highlightEnhanced = 'true';
-        if (prefersReducedMotion) {
-          annotation.show();
-          return;
-        }
-
-        window.setTimeout(() => {
-          annotation.show();
-        }, nextStartDelay);
-
-        nextStartDelay += variant.duration + strokeGap;
-      });
-    };
-
-    if (document.readyState === 'complete') {
-      initRoughHighlights();
-    } else {
-      window.addEventListener('load', initRoughHighlights, { once: true });
-    }
-  })();
-</script>
-
 <style lang='scss'>
-  @use 'sass:math';
-
   .site-banner {
-    --banner-progress: 0;
-    --banner-zoom-progress: 0;
-    --banner-parallax-y: 0px;
-    --banner-bokeh-opacity: calc(0.08 + var(--banner-progress, 0) * 0.42);
-    --banner-bleed-x: max(12%, calc(50vw - 50%));
     position: relative;
     isolation: isolate;
-    overflow: visible;
-    padding: 5vw 0;
-  }
-
-  .site-banner-bg-clip,
-  .site-banner-bg,
-  .site-banner-bokeh,
-  .site-banner-focus {
-    position: absolute;
-    pointer-events: none;
-  }
-
-  .site-banner-bg-clip {
-    inset: 0;
-    z-index: 0;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(92svh - var(--header-height));
+    padding: var(--space-3xl) 0 var(--space-4xl);
     overflow: clip;
   }
 
-  .site-banner-bg {
-    inset: -50% -10% -36%;
-    background-image: url('/images/hexagon.svg');
-    background-size: min(80vw, 100%);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-attachment: fixed;
-    z-index: 0;
-    opacity: calc(1 - var(--banner-progress, 0) * 0.12);
-    filter: blur(calc(var(--banner-progress, 0) * 24px))
-      saturate(calc(1 + var(--banner-progress, 0) * 0.35))
-      brightness(calc(1 - var(--banner-progress, 0) * 0.08));
-    transform: translate3d(
-        0,
-        calc(var(--banner-parallax-y, 0px) + (var(--banner-progress, 0) * -8px)),
-        0
-      )
-      scale(calc(1.12 - var(--banner-zoom-progress, 0) * 0.22));
-    transition:
-      filter 0.24s linear,
-      opacity 0.24s linear,
-      transform 0.24s linear;
-    will-change: transform, filter, opacity;
-  }
-
-  .site-banner-bokeh {
-    top: -18%;
-    right: calc(-1 * var(--banner-bleed-x));
-    bottom: -44%;
-    left: calc(-1 * var(--banner-bleed-x));
-    z-index: 1;
-    opacity: var(--banner-bokeh-opacity);
-    mix-blend-mode: screen;
-    background:
-      radial-gradient(
-        circle at 12% 22%,
-        rgba(255, 255, 255, 0.32) 0,
-        rgba(255, 255, 255, 0.1) 8%,
-        transparent 18%
-      ),
-      radial-gradient(
-        circle at 86% 18%,
-        rgba(255, 255, 255, 0.28) 0,
-        rgba(255, 255, 255, 0.08) 10%,
-        transparent 22%
-      ),
-      radial-gradient(
-        circle at 76% 68%,
-        rgba(255, 255, 255, 0.2) 0,
-        rgba(255, 255, 255, 0.06) 7%,
-        transparent 18%
-      ),
-      radial-gradient(
-        circle at 22% 82%,
-        rgba(255, 255, 255, 0.26) 0,
-        rgba(255, 255, 255, 0.08) 9%,
-        transparent 20%
-      ),
-      radial-gradient(
-        circle at 58% 38%,
-        rgba(255, 255, 255, 0.18) 0,
-        rgba(255, 255, 255, 0.05) 6%,
-        transparent 14%
-      ),
-      radial-gradient(
-        circle at 40% 56%,
-        rgba(255, 255, 255, 0.16) 0,
-        rgba(255, 255, 255, 0.03) 5%,
-        transparent 11%
-      );
-    filter: blur(calc(1px + var(--banner-progress, 0) * 2px));
-    transform: translate3d(0, calc(var(--banner-parallax-y, 0px) * 0.35), 0)
-      scale(calc(1.03 + var(--banner-progress, 0) * 0.08));
-    transition:
-      opacity 0.24s linear,
-      transform 0.24s linear,
-      filter 0.24s linear;
-    will-change: transform, opacity, filter;
-  }
-
-  .site-banner-bokeh:before,
-  .site-banner-bokeh:after {
-    content: '';
+  /* Perspective grid floor — the synthwave stage */
+  .site-banner-floor {
     position: absolute;
-    inset: 0;
-    pointer-events: none;
-    mix-blend-mode: screen;
-    transition:
-      transform 0.24s linear,
-      opacity 0.24s linear,
-      filter 0.24s linear;
+    left: -12%;
+    right: -12%;
+    bottom: -4rem;
+    height: 46%;
+    z-index: -2;
+    background-image:
+      repeating-linear-gradient(
+        90deg,
+        var(--grid-line) 0 1px,
+        transparent 1px 7rem
+      ),
+      repeating-linear-gradient(0deg, var(--grid-line) 0 1px, transparent 1px 5rem);
+    transform: perspective(56rem) rotateX(58deg);
+    transform-origin: 50% 0;
+    mask-image: linear-gradient(to bottom, transparent 0, black 18%, black 72%, transparent 100%);
   }
 
-  .site-banner-bokeh:before {
-    opacity: calc(0.32 + var(--banner-progress, 0) * 0.2);
-    background:
-      radial-gradient(
-        circle at 8% 48%,
-        rgba(255, 255, 255, 0.22) 0,
-        rgba(255, 255, 255, 0.06) 7%,
-        transparent 16%
-      ),
-      radial-gradient(
-        circle at 29% 14%,
-        rgba(255, 255, 255, 0.24) 0,
-        rgba(255, 255, 255, 0.08) 7%,
-        transparent 16%
-      ),
-      radial-gradient(
-        circle at 52% 26%,
-        rgba(255, 255, 255, 0.16) 0,
-        rgba(255, 255, 255, 0.06) 6%,
-        transparent 14%
-      ),
-      radial-gradient(
-        circle at 72% 84%,
-        rgba(255, 255, 255, 0.23) 0,
-        rgba(255, 255, 255, 0.06) 8%,
-        transparent 18%
-      ),
-      radial-gradient(
-        circle at 92% 52%,
-        rgba(255, 255, 255, 0.18) 0,
-        rgba(255, 255, 255, 0.05) 6%,
-        transparent 14%
-      );
-    filter: blur(calc(2px + var(--banner-progress, 0) * 3px));
-    transform: translate3d(0, calc(var(--banner-parallax-y, 0px) * -0.22), 0)
-      scale(calc(1 + var(--banner-progress, 0) * 0.06));
-  }
-
-  .site-banner-bokeh:after {
-    opacity: calc(0.2 + var(--banner-progress, 0) * 0.28);
-    background:
-      radial-gradient(
-        circle at 16% 64%,
-        rgba(255, 255, 255, 0.18) 0,
-        rgba(255, 255, 255, 0.06) 6%,
-        transparent 14%
-      ),
-      radial-gradient(
-        circle at 34% 78%,
-        rgba(255, 255, 255, 0.26) 0,
-        rgba(255, 255, 255, 0.09) 9%,
-        transparent 19%
-      ),
-      radial-gradient(
-        circle at 60% 12%,
-        rgba(255, 255, 255, 0.22) 0,
-        rgba(255, 255, 255, 0.08) 8%,
-        transparent 18%
-      ),
-      radial-gradient(
-        circle at 82% 36%,
-        rgba(255, 255, 255, 0.2) 0,
-        rgba(255, 255, 255, 0.07) 8%,
-        transparent 17%
-      ),
-      radial-gradient(
-        circle at 90% 76%,
-        rgba(255, 255, 255, 0.15) 0,
-        rgba(255, 255, 255, 0.04) 6%,
-        transparent 13%
-      );
-    filter: blur(calc(4px + var(--banner-progress, 0) * 4px));
-    transform: translate3d(0, calc(var(--banner-parallax-y, 0px) * 0.5), 0)
-      scale(calc(0.98 + var(--banner-progress, 0) * 0.12));
-  }
-
-  .site-banner-focus {
-    top: 0;
-    right: calc(50% - 50vw);
-    bottom: 0;
-    left: calc(50% - 50vw);
-    z-index: 2;
-    opacity: calc(0.08 + var(--banner-progress, 0) * 0.32);
-    background: radial-gradient(
-      ellipse at 50% 42%,
-      rgba(255, 255, 255, 0.06) 0%,
-      rgba(255, 255, 255, 0.03) 34%,
-      rgba(21, 23, 26, 0.2) 100%
-    );
-    transition: opacity 0.2s linear;
-  }
-
-  .site-banner-content {
-    position: relative;
-    z-index: 3;
-    display: grid;
-    place-content: center;
-    text-align: center;
-  }
-
-  .site-banner :global(.social-container),
-  .site-banner :global(.social-container a) {
-    pointer-events: auto;
-  }
-
-  @keyframes site-banner-fade-in {
-    from {
-      opacity: 0;
-      filter: blur(5px);
+  @media (prefers-reduced-motion: no-preference) {
+    .site-banner-floor {
+      animation: floor-travel 2.6s linear infinite;
     }
+  }
 
+  @keyframes floor-travel {
     to {
-      opacity: 1;
-      filter: blur(0);
+      background-position:
+        0 0,
+        0 5rem;
     }
   }
 
-  .site-banner-title {
-    margin: 0;
-    margin-bottom: 2rem;
-    padding: 0;
-    color: #fff;
-    line-height: 1.1em;
-    font-family:
-      'Permanent Marker',
-      -apple-system,
-      BlinkMacSystemFont,
-      'Segoe UI',
-      Roboto,
-      Oxygen,
-      Ubuntu,
-      Cantarell,
-      'Helvetica Neue',
-      sans-serif;
-    font-size: 6rem;
-    font-size: clamp(2rem, 15vw, 22rem);
-    text-transform: uppercase;
-    letter-spacing: 0.8rem;
-    opacity: calc(1 - var(--banner-progress, 0) * 0.25);
-    transform: translate3d(0, calc(var(--banner-progress, 0) * -16px), 0)
-      scale(calc(1 + var(--banner-progress, 0) * 0.06));
-    animation: site-banner-fade-in 2500ms ease-in-out forwards;
-    transition:
-      transform 0.2s linear,
-      opacity 0.2s linear;
+  /* Glowing horizon hairline where the floor meets the haze */
+  .site-banner-horizon {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 46%;
+    height: 1px;
+    z-index: -1;
+    background: linear-gradient(
+      90deg,
+      transparent 4%,
+      var(--color-accent) 30%,
+      var(--color-accent-2) 70%,
+      transparent 96%
+    );
+    opacity: 0.55;
+    box-shadow:
+      0 0 18px 1px var(--aura-pink),
+      0 0 60px 8px var(--aura-pink);
   }
 
-  .three-d {
-    display: inline-block;
+  .site-banner-annotation {
+    position: absolute;
+    top: var(--space-lg);
+    z-index: 1;
+    white-space: nowrap;
+
+    &--left {
+      left: var(--layout-gutter);
+    }
+
+    &--right {
+      right: var(--layout-gutter);
+    }
+  }
+
+  .site-banner-stage {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: var(--space-lg);
+  }
+
+  /* The display title with chromatic-aberration ghosts */
+  .site-banner-title {
     position: relative;
     z-index: 0;
+    margin: 0;
+    max-width: 100%;
+    font-family: var(--font-family-display);
+    font-size: var(--display-2xl);
+    font-weight: var(--font-weight-black);
+    font-optical-sizing: auto;
+    line-height: var(--leading-tight);
+    letter-spacing: var(--letter-spacing-display);
+    text-transform: uppercase;
+    text-wrap: balance;
+    color: var(--color-text-strong);
 
-    &:before,
-    &:after {
+    &::before,
+    &::after {
       content: attr(data-line);
       position: absolute;
+      inset: 0;
       backface-visibility: hidden;
+      pointer-events: none;
+      user-select: none;
     }
 
-    &:before {
-      color: var(--color-pink);
-      top: 0;
-      left: 0;
+    /* Pink ghost — shifted left, softly blurred */
+    &::before {
       z-index: -1;
-      transform: translate3d(-2px, 0, 0);
-      animation: site-banner-shake-before 4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both infinite;
-      animation-delay: 0.5s;
+      color: var(--color-accent);
+      opacity: 0.8;
+      filter: blur(2px);
+      transform: translate3d(-0.045em, 0.01em, 0);
     }
 
-    &:after {
-      color: var(--color-green);
-      top: 0;
-      left: 0;
+    /* Cyan ghost — shifted right */
+    &::after {
       z-index: -2;
-      transform: translate3d(2px, 0, 0);
-      animation: site-banner-shake-after 4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both infinite;
-      transform: rotate(1deg);
-    }
-  }
-
-  @keyframes site-banner-shake-before {
-    0% {
-      transform: translate3d(-2px, 0, 0);
-    }
-
-    2% {
-      transform: translate3d(0, 0, 0);
-    }
-
-    4% {
-      transform: translate3d(2px, 0, 0);
-    }
-
-    8% {
-      transform: translate3d(-2px, 0, 0);
-    }
-
-    70% {
-      transform: translate3d(-2px, 0, 0);
-    }
-
-    100% {
-      transform: translate3d(-2px, 0, 0);
-    }
-  }
-
-  @keyframes site-banner-shake-after {
-    0% {
-      transform: translate3d(2px, 0, 0);
-    }
-
-    2% {
-      transform: translate3d(0, 0, 0);
-    }
-
-    4% {
-      transform: translate3d(-2px, 0, 0);
-    }
-
-    8% {
-      transform: translate3d(2px, 0, 0);
-    }
-
-    70% {
-      transform: translate3d(2px, 0, 0);
-    }
-
-    100% {
-      transform: translate3d(2px, 0, 0);
+      color: var(--color-accent-2);
+      opacity: 0.7;
+      filter: blur(3px);
+      transform: translate3d(0.045em, -0.01em, 0);
     }
   }
 
   .site-banner-desc {
-    margin: 5px 0 0;
-    padding: 0;
-    font-size: 2.4rem;
-    font-size: clamp(1.4rem, 12vw, 2.4rem);
-    line-height: 1.3em;
-    opacity: 0.8;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    column-gap: var(--space-sm);
+    row-gap: var(--space-3xs);
+    margin: 0;
+    max-width: 64rem;
+    font-size: clamp(1.6rem, 1.3rem + 1vw, 2.2rem);
+    line-height: var(--leading-snug);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    text-wrap: balance;
   }
 
-  .highlight-container {
-    position: relative;
-    z-index: 0;
+  .site-banner-desc-sep {
+    font-family: var(--font-family-mono);
+    color: var(--color-accent-text);
+    font-size: 0.8em;
   }
 
-  .highlight-container {
-    display: inline-block;
-    margin-right: 0.5rem;
+  .site-banner-social {
+    margin-top: var(--space-sm);
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .site-banner-bg {
-      transform: none;
-      filter: none;
-      transition: none;
-      opacity: 1;
+  .site-banner-scroll {
+    position: absolute;
+    bottom: calc(var(--space-2xl) + 4.4rem);
+    left: 50%;
+    translate: -50% 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+
+    &::after {
+      content: '';
+      width: 1px;
+      height: 4rem;
+      background: linear-gradient(to bottom, var(--color-accent), transparent);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .site-banner-scroll::after {
+      animation: scroll-cue 2.2s var(--ease-in-out-soft) infinite;
+    }
+  }
+
+  @keyframes scroll-cue {
+    0% {
+      transform: scaleY(0);
+      transform-origin: top;
     }
 
-    .site-banner-bokeh {
-      opacity: 0.12;
-      transform: none;
-      filter: blur(1px);
-      transition: none;
+    45% {
+      transform: scaleY(1);
+      transform-origin: top;
     }
 
-    .site-banner-bokeh:before,
-    .site-banner-bokeh:after {
-      transform: none;
-      filter: blur(1px);
-      transition: none;
+    55% {
+      transform: scaleY(1);
+      transform-origin: bottom;
     }
 
-    .site-banner-focus {
-      opacity: 0.08;
-      transition: none;
+    100% {
+      transform: scaleY(0);
+      transform-origin: bottom;
     }
+  }
 
-    .site-banner-content,
-    .site-banner-desc {
-      transition: none;
+  /* Marquee strip — duplicated description, purely decorative */
+  .site-marquee {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    border-block: 1px solid var(--color-border-subtle);
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: var(--space-xs) 0;
+  }
+
+  .site-marquee-track {
+    display: flex;
+    width: max-content;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .site-marquee-track {
+      animation: marquee-roll 90s linear infinite;
     }
+  }
 
+  .site-marquee-group {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .site-marquee-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-lg);
+    padding-right: var(--space-lg);
+    font-family: var(--font-family-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--letter-spacing-mono);
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-text-muted);
+  }
+
+  .site-marquee-star {
+    color: var(--color-accent-text);
+    font-size: 0.9em;
+  }
+
+  @keyframes marquee-roll {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Load choreography — one staged reveal, then calm */
+  @media (prefers-reduced-motion: no-preference) {
     .site-banner-title {
-      opacity: 1;
-      transform: none;
-      animation: none;
-      transition: none;
+      animation: rise-in 900ms var(--ease-out-expo) both;
     }
 
-    .three-d {
-      &:before,
-      &:after {
-        animation: none;
+    .site-banner-title::before {
+      animation:
+        ca-settle-pink 700ms var(--ease-out-expo) 500ms both,
+        ca-drift-pink 9s steps(1, end) 3s infinite;
+    }
+
+    .site-banner-title::after {
+      animation:
+        ca-settle-cyan 700ms var(--ease-out-expo) 560ms both,
+        ca-drift-cyan 9s steps(1, end) 3s infinite;
+    }
+
+    .site-banner-desc {
+      animation: rise-in 800ms var(--ease-out-expo) 350ms both;
+    }
+
+    .site-banner-social {
+      animation: rise-in 800ms var(--ease-out-expo) 500ms both;
+    }
+
+    .site-banner-annotation {
+      animation: fade-in 900ms linear 900ms both;
+    }
+
+    .site-banner-scroll {
+      animation: fade-in 900ms linear 1200ms both;
+    }
+
+    .site-banner-horizon {
+      animation: horizon-ignite 1400ms var(--ease-out-expo) 700ms both;
+    }
+  }
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(2.4rem);
+      filter: blur(6px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes horizon-ignite {
+    from {
+      opacity: 0;
+      transform: scaleX(0.2);
+    }
+
+    to {
+      opacity: 0.55;
+      transform: none;
+    }
+  }
+
+  /* Ghosts slide out from behind the title once it lands */
+  @keyframes ca-settle-pink {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 0, 0);
+      filter: blur(0);
+    }
+
+    to {
+      opacity: 0.8;
+      transform: translate3d(-0.045em, 0.01em, 0);
+      filter: blur(2px);
+    }
+  }
+
+  @keyframes ca-settle-cyan {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 0, 0);
+      filter: blur(0);
+    }
+
+    to {
+      opacity: 0.7;
+      transform: translate3d(0.045em, -0.01em, 0);
+      filter: blur(3px);
+    }
+  }
+
+  /* Occasional mis-registration twitch — brief, then long idle */
+  @keyframes ca-drift-pink {
+    0%,
+    3.4%,
+    100% {
+      transform: translate3d(-0.045em, 0.01em, 0);
+    }
+
+    0.8% {
+      transform: translate3d(-0.075em, 0.022em, 0);
+    }
+
+    1.6% {
+      transform: translate3d(-0.02em, -0.012em, 0);
+    }
+
+    2.4% {
+      transform: translate3d(-0.06em, 0.016em, 0);
+    }
+  }
+
+  @keyframes ca-drift-cyan {
+    0%,
+    3.4%,
+    100% {
+      transform: translate3d(0.045em, -0.01em, 0);
+    }
+
+    0.8% {
+      transform: translate3d(0.08em, -0.024em, 0);
+    }
+
+    1.6% {
+      transform: translate3d(0.022em, 0.014em, 0);
+    }
+
+    2.4% {
+      transform: translate3d(0.06em, -0.018em, 0);
+    }
+  }
+
+  /* Hero recedes into haze as you scroll — scroll-driven, no JS */
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .site-banner-stage {
+        animation: hero-recede linear both;
+        animation-timeline: scroll();
+        animation-range: 0 88svh;
       }
+    }
+  }
+
+  @keyframes hero-recede {
+    to {
+      opacity: 0.1;
+      transform: translateY(-5rem) scale(0.97);
+      filter: blur(10px);
+    }
+  }
+
+  @media (max-width: 680px) {
+    .site-banner {
+      min-height: calc(86svh - var(--header-height));
+      padding-top: var(--space-2xl);
+    }
+
+    .site-banner-annotation--right {
+      display: none;
+    }
+
+    .site-banner-scroll {
+      display: none;
     }
   }
 </style>

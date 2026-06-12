@@ -1,27 +1,58 @@
 ---
+import type { GhostPost } from '../../lib/ghost-types';
+import { formatReadingTime, getPublicTags } from '../../lib/content';
+
 interface Props {
-  title: string;
-  html: string;
-  featureImage?: string | null;
+  post: GhostPost;
 }
 
-const { title, html, featureImage = null } = Astro.props;
+const { post } = Astro.props;
+
+const publicTags = getPublicTags(post.tags);
+const primaryTag = publicTags[0] || null;
+const readingTime = formatReadingTime(post);
+const publishedDate = post.published_at
+  ? new Date(post.published_at).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    })
+  : null;
+const publishedDateTime = post.published_at ? post.published_at.slice(0, 10) : null;
 ---
 
-<div id='scroll-progress'></div>
-<article class='content'>
+<div id='scroll-progress' aria-hidden='true'></div>
+
+<article class='content post-article'>
+  <header class='post-head'>
+    <p class='post-kicker spec-label'>
+      {primaryTag && <b>[ {primaryTag.name} ]</b>}
+      {
+        publishedDate && (
+          <time datetime={publishedDateTime}> · {publishedDate}</time>
+        )
+      }
+      <span> · {readingTime}</span>
+    </p>
+    <h1 class='content-title post-title'>{post.title}</h1>
+  </header>
+
   {
-    featureImage && (
-      <figure class='post-feature-image poster'>
-        <img src={featureImage} alt={title} loading='lazy' />
+    post.feature_image && (
+      <figure class='post-feature'>
+        <img src={post.feature_image} alt='' loading='eager' decoding='async' />
       </figure>
     )
   }
-  <section class='post-full-content'>
-    <h1 class='content-title'>{title}</h1>
 
-    <section class='content-body load-external-scripts' set:html={html} />
+  <section class='post-full-content'>
+    <section class='content-body load-external-scripts' set:html={post.html} />
   </section>
+
+  <footer class='post-end'>
+    <span class='spec-label'>// EOF</span>
+    <a class='post-end-back spec-label' href='/'>&lt;- back to index</a>
+  </footer>
 </article>
 
 <style is:global lang='scss'>

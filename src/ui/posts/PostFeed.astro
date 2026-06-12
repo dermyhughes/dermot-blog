@@ -1,24 +1,60 @@
+---
+interface Props {
+  label?: string | null;
+  count?: number | null;
+}
+
+const { label = null, count = null } = Astro.props;
+---
+
+{
+  label && (
+    <header class='post-feed-head'>
+      <p class='spec-label'>
+        [ {label}
+        {count !== null && <b>{` / ${String(count).padStart(3, '0')} entries`}</b>} ]
+      </p>
+      <span class='post-feed-rule' aria-hidden='true' />
+    </header>
+  )
+}
+
 <section class='post-feed'>
   <slot />
 </section>
 
 <style lang='scss'>
-.post-feed {
-  display: grid;
-  justify-content: space-between;
-  grid-gap: 30px;
-  grid-template-columns: 1fr 1fr 1fr;
-}
-
-@media (max-width: 980px) {
-  .post-feed {
-    grid-template-columns: 1fr 1fr;
+  .post-feed-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin: 0 0 var(--space-xl);
   }
-}
 
-@media (max-width: 680px) {
-  .post-feed {
-    grid-template-columns: 1fr;
+  .post-feed-head .spec-label {
+    margin: 0;
+    white-space: nowrap;
   }
-}
+
+  .post-feed-rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--color-border-strong), transparent);
+  }
+
+  .post-feed {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .post-feed > :global(.post-card--feature) {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 980px) {
+    .post-feed {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>

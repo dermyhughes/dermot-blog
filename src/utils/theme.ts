@@ -24,12 +24,22 @@ export const getSystemTheme = (): ThemePreference => {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 };
 
+export const THEME_COLORS: Record<ThemePreference, string> = {
+  dark: '#0e0918',
+  light: '#f7f4fb',
+};
+
 export const applyTheme = (theme: ThemePreference) => {
   if (!canUseDOM) return;
   const root = document.documentElement;
 
   root.dataset.theme = theme;
   root.style.colorScheme = theme;
+
+  const themeColorMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  if (themeColorMeta) {
+    themeColorMeta.content = THEME_COLORS[theme];
+  }
 };
 
 export const persistTheme = (theme: ThemePreference) => {

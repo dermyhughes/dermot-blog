@@ -56,6 +56,7 @@ let page: GhostPage | null = null;
 let tag: GhostTag | null = null;
 let paginatedPosts: GhostPost[] = [];
 let numberOfPages = 1;
+let totalTagPosts = 0;
 
 if (kind === 'page') {
   page = await getPageBySlug(slug || '');
@@ -74,6 +75,7 @@ if (kind === 'page') {
   const paginated = paginateItems(allTagPosts, POSTS_PER_PAGE, 1);
   paginatedPosts = paginated.items;
   numberOfPages = paginated.numberOfPages;
+  totalTagPosts = allTagPosts.length;
 }
 
 const pagination = buildPaginationContext(1, numberOfPages, (pageNumber) =>
@@ -105,9 +107,9 @@ const pagination = buildPaginationContext(1, numberOfPages, (pageNumber) =>
       </div>
     ) : (
       <div class='container'>
-        <TagHeader title={tag?.name || ''} description={tag?.description} />
+        <TagHeader title={tag?.name || ''} description={tag?.description} count={totalTagPosts} />
         <PostFeed>
-          {paginatedPosts.map((post) => <PostCard post={post} />)}
+          {paginatedPosts.map((post, index) => <PostCard post={post} index={index + 1} />)}
         </PostFeed>
         <Pagination {...pagination} />
       </div>

@@ -2,151 +2,167 @@
 import ThemeToggle from '../navigation/ThemeToggle';
 import Navigation from '../navigation/Navigation.astro';
 import SocialLinks from '../navigation/SocialLinks.astro';
-import SiteBanner from './SiteBanner.astro';
 import type { GhostSettings } from '../../lib/ghost-types';
 
 interface Props {
   settings: GhostSettings;
   currentPath: string;
   isHome?: boolean;
-  descriptionParts: string[];
 }
 
-const { settings, currentPath, isHome = false, descriptionParts } = Astro.props;
+const { settings, currentPath, isHome = false } = Astro.props;
 ---
 
-<header
-  class='site-head'
-  style={settings.cover_image ? `background-image: url(${settings.cover_image});` : undefined}
->
-  <div class='container'>
-    {
-      !isHome && (
-        <div class='site-mast'>
-          <nav class='site-nav-left' aria-label='Primary navigation'>
-            <Navigation data={settings.navigation || []} navClass='site-nav-item' currentPath={currentPath} />
-          </nav>
-          <div class='site-mast-right mast-small'>
-            <div class='site-actions' role='group' aria-label='Display and social links'>
-              <ThemeToggle client:load />
-              <SocialLinks isHome={false} />
-            </div>
-          </div>
-        </div>
-      )
-    }
+<header class='site-head' data-home={isHome ? 'true' : undefined}>
+  <div class='container site-head-inner'>
+    <a class='site-wordmark' href='/' aria-label={`${settings.title} — home`}>
+      <span class='site-wordmark-text'>{settings.title}</span><span
+        class='site-wordmark-cursor'
+        aria-hidden='true'>_</span
+      >
+    </a>
 
-    {
-      isHome && (
-        <>
-          <SiteBanner title={settings.title} descriptionParts={descriptionParts} />
-          <div class='site-nav'>
-            <nav class='site-nav-left' aria-label='Primary navigation'>
-              <Navigation data={settings.navigation || []} navClass='site-nav-item' currentPath={currentPath} />
-            </nav>
-            <div class='site-nav-right'>
-              <div class='site-actions' role='group' aria-label='Display controls'>
-                <ThemeToggle client:load />
-              </div>
-            </div>
-          </div>
-        </>
-      )
-    }
+    <nav class='site-nav' aria-label='Primary navigation'>
+      <Navigation
+        data={settings.navigation || []}
+        navClass='site-nav-item'
+        currentPath={currentPath}
+        withIndex
+      />
+    </nav>
+
+    <div class='site-actions' role='group' aria-label='Display and social links'>
+      <SocialLinks />
+      <span class='site-actions-divider' aria-hidden='true'></span>
+      <ThemeToggle client:load />
+    </div>
   </div>
 </header>
-<section aria-hidden='true' class='skewed' />
 
 <style lang='scss'>
-@mixin dots-bg {
-  background: var(--color-base);
-  background-size: 1%;
-  background-position: top;
-  background-attachment: fixed;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23000000' fill-opacity='0.4' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
-}
-
-.site-head {
-  padding-top: var(--space-lg);
-  padding-bottom: var(--space-lg);
-  color: var(--color-text-inverse);
-  background: var(--color-base);
-  @include dots-bg;
-  position: relative;
-  z-index: var(--z-nav);
-}
-
-.site-mast {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-weight: 600;
-}
-
-.site-mast-right {
-  display: flex;
-  align-items: center;
-}
-
-.site-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 15px 0 0;
-  font-weight: 600;
-}
-
-.site-nav-right {
-  display: flex;
-  align-items: center;
-}
-
-.site-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.site-nav-left {
-  margin: 0 20px 0 -10px;
-}
-
-.skewed {
-  height: 42px;
-  height: clamp(15px, 5vw, 42px);
-  background: var(--color-base);
-  clip-path: polygon(0 0, 100% 0%, 100% 100%, 0 0%);
-  @include dots-bg;
-  position: relative;
-  z-index: 1;
-  margin-top: -1px;
-}
-
-@media (max-width: 580px) {
-  .site-nav {
-    justify-content: center;
+  .site-head {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-nav);
+    background: var(--glass-bg);
+    border-bottom: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--blur-glass)) saturate(1.5);
+    -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(1.5);
   }
 
-  .site-mast {
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-sm);
+  /* Bar starts transparent and frosts over as you scroll —
+     progressive enhancement via scroll-driven animations */
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .site-head {
+        animation: site-head-frost linear both;
+        animation-timeline: scroll();
+        animation-range: 0 160px;
+      }
+    }
   }
 
-  .site-nav-left {
-    width: 100%;
-    margin: 0 !important;
+  @keyframes site-head-frost {
+    from {
+      background: transparent;
+      border-bottom-color: transparent;
+      backdrop-filter: blur(0) saturate(1);
+      -webkit-backdrop-filter: blur(0) saturate(1);
+    }
+
+    to {
+      background: var(--glass-bg);
+      border-bottom-color: var(--glass-border);
+      backdrop-filter: blur(var(--blur-glass)) saturate(1.5);
+      -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(1.5);
+    }
+  }
+
+  .site-head-inner {
     display: flex;
-    justify-content: center;
+    align-items: center;
+    gap: var(--space-md);
+    min-height: var(--header-height);
   }
 
-  .site-mast-right.mast-small {
-    width: 100%;
-    justify-content: center;
+  .site-wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    font-family: var(--font-family-display);
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-display);
+    color: var(--color-text-strong);
+    white-space: nowrap;
+
+    &:hover {
+      text-decoration: none;
+      color: var(--color-text-strong);
+    }
+  }
+
+  .site-wordmark-cursor {
+    color: var(--color-accent-text);
+    margin-left: 0.15em;
+    font-weight: var(--font-weight-black);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .site-wordmark:hover .site-wordmark-cursor {
+      animation: wordmark-blink 1s steps(2, start) infinite;
+    }
+  }
+
+  @keyframes wordmark-blink {
+    to {
+      visibility: hidden;
+    }
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    margin-left: var(--space-lg);
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   .site-actions {
-    justify-content: center;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-left: auto;
   }
-}
+
+  .site-actions-divider {
+    width: 1px;
+    height: 2rem;
+    background: var(--color-border-subtle);
+  }
+
+  @media (max-width: 680px) {
+    .site-head-inner {
+      gap: var(--space-sm);
+    }
+
+    .site-nav {
+      margin-left: var(--space-2xs);
+      mask-image: linear-gradient(90deg, black 85%, transparent);
+    }
+
+    .site-nav :global(.site-nav-index) {
+      display: none;
+    }
+
+    .site-actions :global(.social-container),
+    .site-actions-divider {
+      display: none;
+    }
+  }
 </style>

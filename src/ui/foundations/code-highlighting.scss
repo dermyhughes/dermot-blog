@@ -1,67 +1,55 @@
+/* Code highlighting — vapour terminal palette
+/* All token colors hold ≥ 4.5:1 against the code background.
+/* ---------------------------------------------------------- */
+
+@mixin code-theme-light {
+  --code-bg: #f4eff9;
+  --code-border: rgba(88, 52, 134, 0.16);
+  --code-text: #2a1e3f;
+  --code-comment: #6d6088;
+  --code-punctuation: #574a72;
+  --code-property: #0d6a86;
+  --code-selector: #066a52;
+  --code-operator: #574a72;
+  --code-keyword: #b3186d;
+  --code-string: #875a00;
+  --code-function: #6531d6;
+  --code-boolean: #9a4a00;
+  --code-number: #9a4a00;
+}
+
+@mixin code-theme-dark {
+  --code-bg: #120b20;
+  --code-border: rgba(186, 156, 255, 0.16);
+  --code-text: #e9e2f8;
+  --code-comment: #8d7fae;
+  --code-punctuation: #b3a6d4;
+  --code-property: #9fa8ff;
+  --code-selector: #5eead4;
+  --code-operator: #b3a6d4;
+  --code-keyword: #ff85b3;
+  --code-string: #ffd285;
+  --code-function: #5ce8ec;
+  --code-boolean: #ffab70;
+  --code-number: #ffab70;
+}
+
 :root {
-  --code-bg: #f6f8fa;
-  --code-border: #d0d7de;
-  --code-text: #24292f;
-  --code-comment: #6e7781;
-  --code-punctuation: #57606a;
-  --code-property: #0550ae;
-  --code-selector: #1a7f37;
-  --code-operator: #57606a;
-  --code-keyword: #cf222e;
-  --code-string: #0a3069;
-  --code-function: #8250df;
-  --code-boolean: #953800;
-  --code-number: #953800;
+  @include code-theme-light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --code-bg: #111827;
-    --code-border: #334155;
-    --code-text: #d1d5db;
-    --code-comment: #94a3b8;
-    --code-punctuation: #94a3b8;
-    --code-property: #93c5fd;
-    --code-selector: #86efac;
-    --code-operator: #cbd5e1;
-    --code-keyword: #f9a8d4;
-    --code-string: #fcd34d;
-    --code-function: #c4b5fd;
-    --code-boolean: #fdba74;
-    --code-number: #fdba74;
+    @include code-theme-dark;
   }
 }
 
 :root[data-theme='dark'] {
-  --code-bg: #111827;
-  --code-border: #334155;
-  --code-text: #d1d5db;
-  --code-comment: #94a3b8;
-  --code-punctuation: #94a3b8;
-  --code-property: #93c5fd;
-  --code-selector: #86efac;
-  --code-operator: #cbd5e1;
-  --code-keyword: #f9a8d4;
-  --code-string: #fcd34d;
-  --code-function: #c4b5fd;
-  --code-boolean: #fdba74;
-  --code-number: #fdba74;
+  @include code-theme-dark;
 }
 
 :root[data-theme='light'] {
-  --code-bg: #f6f8fa;
-  --code-border: #d0d7de;
-  --code-text: #24292f;
-  --code-comment: #6e7781;
-  --code-punctuation: #57606a;
-  --code-property: #0550ae;
-  --code-selector: #1a7f37;
-  --code-operator: #57606a;
-  --code-keyword: #cf222e;
-  --code-string: #0a3069;
-  --code-function: #8250df;
-  --code-boolean: #953800;
-  --code-number: #953800;
+  @include code-theme-light;
 }
 
 code[class*='language-'],
@@ -79,6 +67,7 @@ pre[class*='language-'] {
 :where(code[class*='language-'], pre[class*='language-']) .token.doctype,
 :where(code[class*='language-'], pre[class*='language-']) .token.cdata {
   color: var(--code-comment);
+  font-style: italic;
 }
 
 :where(code[class*='language-'], pre[class*='language-']) .token.punctuation {

@@ -1,28 +1,39 @@
 .cat-image {
   margin-top: 1.5rem;
-  text-align: center;
 
   &__skeleton {
     width: 100%;
     max-width: 640px;
+    margin-inline: auto;
     aspect-ratio: 640 / 480;
-    border-radius: 4px;
-    background: var(--color-bg-quaternary);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-muted);
     animation: pulse 1.5s ease-in-out infinite;
   }
 
   &__img {
-    max-width: 100%;
+    display: block;
+    width: 100%;
+    max-width: 640px;
+    margin-inline: auto;
     height: auto;
-    border-radius: 4px;
+    border-radius: var(--radius-lg);
   }
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cat-image__skeleton {
+    animation: none;
   }
 }
