@@ -32,9 +32,6 @@ const marqueeGroup = Array.from({ length: 2 }).flatMap(() => marqueeRoles);
 ---
 
 <section class='site-banner' aria-labelledby='site-banner-title'>
-  <div class='site-banner-floor' aria-hidden='true'></div>
-  <div class='site-banner-horizon' aria-hidden='true'></div>
-
   <span class='site-banner-annotation site-banner-annotation--left spec-label' aria-hidden='true'>
     [ index <b>/ 001</b> ]
   </span>
@@ -42,30 +39,72 @@ const marqueeGroup = Array.from({ length: 2 }).flatMap(() => marqueeRoles);
     [ v3.0 — <b>vapour</b> ]
   </span>
 
-  <div class='site-banner-stage container'>
-    <h1 id='site-banner-title' class='site-banner-title' data-line={title}>
-      {title}
-    </h1>
+  <div class='crt'>
+    <div class='crt-antenna' aria-hidden='true'>
+      <span class='crt-antenna-rod crt-antenna-rod--left'></span>
+      <span class='crt-antenna-rod crt-antenna-rod--right'></span>
+    </div>
 
-    {
-      descriptionParts.length > 0 && (
-        <p class='site-banner-desc'>
-          {descriptionParts.map((item, index) => (
-            <>
-              <span class='site-banner-desc-part'>{item}</span>
-              {index < descriptionParts.length - 1 && (
-                <span class='site-banner-desc-sep' aria-hidden='true'>
-                  /
-                </span>
-              )}
-            </>
-          ))}
-        </p>
-      )
-    }
+    <div class='crt-cabinet'>
+      <div class='crt-bezel'>
+        <div class='crt-screen'>
+          <div class='crt-scene'>
+            <div class='site-banner-floor' aria-hidden='true'></div>
+            <div class='site-banner-horizon' aria-hidden='true'></div>
 
-    <div class='site-banner-social'>
-      <SocialLinks isHome />
+            <div class='site-banner-stage'>
+              <h1 id='site-banner-title' class='site-banner-title' data-line={title}>
+                {title}
+              </h1>
+
+              {
+                descriptionParts.length > 0 && (
+                  <p class='site-banner-desc'>
+                    {descriptionParts.map((item, index) => (
+                      <>
+                        <span class='site-banner-desc-part'>{item}</span>
+                        {index < descriptionParts.length - 1 && (
+                          <span class='site-banner-desc-sep' aria-hidden='true'>
+                            /
+                          </span>
+                        )}
+                      </>
+                    ))}
+                  </p>
+                )
+              }
+
+              <div class='site-banner-social'>
+                <SocialLinks isHome />
+              </div>
+            </div>
+          </div>
+
+          <span class='crt-osd spec-label' aria-hidden='true'>ch·03</span>
+          <div class='crt-static' aria-hidden='true'></div>
+          <div class='crt-scanlines' aria-hidden='true'></div>
+          <div class='crt-scanband' aria-hidden='true'></div>
+          <div class='crt-glare' aria-hidden='true'></div>
+        </div>
+      </div>
+
+      <div class='crt-controls'>
+        <span class='crt-led' aria-hidden='true'></span>
+        <span class='crt-knob crt-knob--vol' aria-hidden='true'></span>
+        <span class='crt-knob-label spec-label' aria-hidden='true'>vol</span>
+        <span
+          class='crt-knob crt-knob--tune'
+          role='slider'
+          tabindex='0'
+          aria-label='Tuning dial — dials TV static in or out'
+          aria-valuemin='0'
+          aria-valuemax='100'
+          aria-valuenow='0'
+          aria-orientation='vertical'></span>
+        <span class='crt-knob-label spec-label' aria-hidden='true'>tune</span>
+        <span class='crt-grille' aria-hidden='true'></span>
+        <span class='crt-brand spec-label' aria-hidden='true'>dh·2600<br />solid state</span>
+      </div>
     </div>
   </div>
 
@@ -93,71 +132,114 @@ const marqueeGroup = Array.from({ length: 2 }).flatMap(() => marqueeRoles);
   </div>
 </section>
 
+<script>
+  // The tune knob easter egg — drag (or arrow-key) the dial to mix
+  // animated static into the broadcast.
+  (() => {
+    const banner = document.querySelector<HTMLElement>('.site-banner');
+    const knob = banner?.querySelector<HTMLElement>('.crt-knob--tune');
+    const screen = banner?.querySelector<HTMLElement>('.crt-screen');
+    const osd = banner?.querySelector<HTMLElement>('.crt-osd');
+
+    if (!banner || !knob || !screen) return;
+
+    const MIN_ANGLE = -135;
+    const MAX_ANGLE = 135;
+    const DRAG_RANGE = 160; // px of vertical drag for the full sweep
+    const SIGNAL_LOST_AT = 0.66;
+
+    const channelLabel = osd?.textContent?.trim() || 'ch·03';
+
+    let level = 0;
+    let dragging = false;
+    let dragStartY = 0;
+    let dragStartLevel = 0;
+
+    const render = () => {
+      const angle = MIN_ANGLE + (MAX_ANGLE - MIN_ANGLE) * level;
+      knob.style.transform = `rotate(${angle}deg)`;
+      screen.style.setProperty('--static-level', level.toFixed(3));
+      screen.dataset.staticOn = level > 0.004 ? 'true' : 'false';
+      knob.setAttribute('aria-valuenow', String(Math.round(level * 100)));
+      knob.setAttribute('aria-valuetext', `${Math.round(level * 100)}% static`);
+
+      if (osd) {
+        const lost = level > SIGNAL_LOST_AT;
+        osd.textContent = lost ? 'no·signal' : channelLabel;
+        osd.dataset.lost = lost ? 'true' : 'false';
+      }
+    };
+
+    const setLevel = (next: number) => {
+      level = Math.min(1, Math.max(0, next));
+      render();
+    };
+
+    knob.addEventListener('pointerdown', (event) => {
+      dragging = true;
+      dragStartY = event.clientY;
+      dragStartLevel = level;
+      knob.setPointerCapture(event.pointerId);
+      knob.classList.add('is-tuning');
+      event.preventDefault();
+    });
+
+    knob.addEventListener('pointermove', (event) => {
+      if (!dragging) return;
+      setLevel(dragStartLevel + (dragStartY - event.clientY) / DRAG_RANGE);
+    });
+
+    const endDrag = (event: PointerEvent) => {
+      if (!dragging) return;
+      dragging = false;
+      knob.classList.remove('is-tuning');
+      if (knob.hasPointerCapture(event.pointerId)) {
+        knob.releasePointerCapture(event.pointerId);
+      }
+    };
+
+    knob.addEventListener('pointerup', endDrag);
+    knob.addEventListener('pointercancel', endDrag);
+
+    knob.addEventListener('keydown', (event) => {
+      const step = 0.05;
+      let next: number | null = null;
+
+      if (event.key === 'ArrowUp' || event.key === 'ArrowRight') {
+        next = level + step;
+      } else if (event.key === 'ArrowDown' || event.key === 'ArrowLeft') {
+        next = level - step;
+      } else if (event.key === 'PageUp') {
+        next = level + 0.2;
+      } else if (event.key === 'PageDown') {
+        next = level - 0.2;
+      } else if (event.key === 'Home') {
+        next = 0;
+      } else if (event.key === 'End') {
+        next = 1;
+      }
+
+      if (next !== null) {
+        event.preventDefault();
+        setLevel(next);
+      }
+    });
+
+    render();
+  })();
+</script>
+
 <style lang='scss'>
   .site-banner {
     position: relative;
     isolation: isolate;
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
     min-height: calc(92svh - var(--header-height));
-    padding: var(--space-3xl) 0 var(--space-4xl);
+    padding: var(--space-3xl) var(--layout-gutter) calc(var(--space-3xl) + 4rem);
     overflow: clip;
-  }
-
-  /* Perspective grid floor — the synthwave stage */
-  .site-banner-floor {
-    position: absolute;
-    left: -12%;
-    right: -12%;
-    bottom: -4rem;
-    height: 46%;
-    z-index: -2;
-    background-image:
-      repeating-linear-gradient(
-        90deg,
-        var(--grid-line) 0 1px,
-        transparent 1px 7rem
-      ),
-      repeating-linear-gradient(0deg, var(--grid-line) 0 1px, transparent 1px 5rem);
-    transform: perspective(56rem) rotateX(58deg);
-    transform-origin: 50% 0;
-    mask-image: linear-gradient(to bottom, transparent 0, black 18%, black 72%, transparent 100%);
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .site-banner-floor {
-      animation: floor-travel 2.6s linear infinite;
-    }
-  }
-
-  @keyframes floor-travel {
-    to {
-      background-position:
-        0 0,
-        0 5rem;
-    }
-  }
-
-  /* Glowing horizon hairline where the floor meets the haze */
-  .site-banner-horizon {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 46%;
-    height: 1px;
-    z-index: -1;
-    background: linear-gradient(
-      90deg,
-      transparent 4%,
-      var(--color-accent) 30%,
-      var(--color-accent-2) 70%,
-      transparent 96%
-    );
-    opacity: 0.55;
-    box-shadow:
-      0 0 18px 1px var(--aura-pink),
-      0 0 60px 8px var(--aura-pink);
   }
 
   .site-banner-annotation {
@@ -175,11 +257,200 @@ const marqueeGroup = Array.from({ length: 2 }).flatMap(() => marqueeRoles);
     }
   }
 
+  /* The television
+  /* -------------------------------------------------------- */
+  .crt {
+    position: relative;
+    width: min(100%, 96rem);
+    margin-top: var(--space-xl);
+
+    /* Neon underglow beneath the set */
+    &::after {
+      content: '';
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      bottom: -3.5rem;
+      height: 7rem;
+      z-index: -1;
+      background: radial-gradient(ellipse at 50% 50%, var(--aura-pink), transparent 70%);
+      filter: blur(14px);
+    }
+  }
+
+  .crt-antenna {
+    position: absolute;
+    bottom: calc(100% - 1.5rem);
+    left: 50%;
+    width: 0;
+    z-index: -1;
+  }
+
+  .crt-antenna-rod {
+    position: absolute;
+    bottom: 0;
+    left: -1px;
+    width: 2px;
+    height: clamp(5rem, 9vw, 8.5rem);
+    background: linear-gradient(to top, var(--color-border-strong), var(--color-text-muted));
+    transform-origin: bottom center;
+    border-radius: var(--radius-full);
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: -0.45rem;
+      left: 50%;
+      width: 0.9rem;
+      height: 0.9rem;
+      translate: -50% 0;
+      border-radius: 50%;
+      background: var(--color-text-muted);
+    }
+
+    &--left {
+      transform: rotate(-26deg);
+    }
+
+    &--right {
+      transform: rotate(21deg);
+    }
+  }
+
+  .crt-cabinet {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 9rem;
+    gap: clamp(1rem, 2vw, 1.8rem);
+    padding: clamp(1.2rem, 2.4vw, 2rem);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border-strong);
+    background: linear-gradient(
+      168deg,
+      var(--color-surface-raised),
+      var(--color-surface) 55%,
+      var(--color-surface-subtle)
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.07),
+      var(--shadow-lg);
+  }
+
+  .crt-bezel {
+    padding: clamp(0.8rem, 1.6vw, 1.4rem);
+    border-radius: calc(var(--radius-xl) - 0.6rem);
+    background: linear-gradient(180deg, #0a0613, #140d22);
+    border: 1px solid rgba(0, 0, 0, 0.55);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
+  }
+
+  /* The tube is always lit — re-scope dark tokens so the scene
+     glows the same in both site themes */
+  .crt-screen {
+    --color-text-strong: #faf8ff;
+    --color-text-primary: #e9e2f8;
+    --color-text-secondary: #b3a6d4;
+    --color-text-muted: #9082b5;
+    --color-border-subtle: rgba(186, 156, 255, 0.14);
+    --color-border-strong: rgba(196, 170, 255, 0.3);
+    --color-accent-text: var(--color-pink-400);
+    --color-accent-2-text: var(--color-cyan-400);
+    --focus-ring-color: var(--color-pink-400);
+    --glass-bg: rgba(18, 11, 31, 0.72);
+    --grid-line: rgba(186, 156, 255, 0.09);
+    --aura-pink: rgba(255, 46, 136, 0.2);
+    --aura-violet: rgba(124, 77, 255, 0.17);
+    --aura-cyan: rgba(45, 226, 230, 0.11);
+    --glow-pink: 0 0 24px rgba(255, 46, 136, 0.35);
+
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    border-radius: clamp(1.6rem, 3vw, 2.6rem);
+    background:
+      radial-gradient(120% 90% at 20% 0%, var(--aura-violet), transparent 60%),
+      radial-gradient(120% 90% at 85% 10%, var(--aura-pink), transparent 65%),
+      radial-gradient(100% 70% at 60% 100%, rgba(45, 226, 230, 0.07), transparent 70%),
+      #0d0817;
+
+    /* Curved-glass vignette */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+      border-radius: inherit;
+      box-shadow:
+        inset 0 0 9rem rgba(2, 0, 8, 0.55),
+        inset 0 0 2.4rem rgba(2, 0, 8, 0.4);
+    }
+  }
+
+  .crt-scene {
+    position: relative;
+    min-height: clamp(30rem, 52svh, 46rem);
+    display: grid;
+    align-content: center;
+  }
+
+  /* Perspective grid floor — the synthwave stage, now broadcast */
+  .site-banner-floor {
+    position: absolute;
+    left: -14%;
+    right: -14%;
+    bottom: -2rem;
+    height: 46%;
+    z-index: -2;
+    background-image:
+      repeating-linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px 6rem),
+      repeating-linear-gradient(0deg, var(--grid-line) 0 1px, transparent 1px 4.4rem);
+    transform: perspective(48rem) rotateX(58deg);
+    transform-origin: 50% 0;
+    mask-image: linear-gradient(to bottom, transparent 0, black 16%, black 70%, transparent 100%);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .site-banner-floor {
+      animation: floor-travel 2.6s linear infinite;
+    }
+  }
+
+  @keyframes floor-travel {
+    to {
+      background-position:
+        0 0,
+        0 4.4rem;
+    }
+  }
+
+  /* Glowing horizon hairline where the floor meets the haze */
+  .site-banner-horizon {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 44%;
+    height: 1px;
+    z-index: -1;
+    background: linear-gradient(
+      90deg,
+      transparent 2%,
+      var(--color-accent) 30%,
+      var(--color-accent-2) 70%,
+      transparent 98%
+    );
+    opacity: 0.55;
+    box-shadow:
+      0 0 18px 1px var(--aura-pink),
+      0 0 60px 8px var(--aura-pink);
+  }
+
   .site-banner-stage {
     display: grid;
     justify-items: center;
     text-align: center;
-    gap: var(--space-lg);
+    gap: var(--space-md);
+    padding: clamp(3.2rem, 7vh, 5.6rem) clamp(2rem, 5vw, 5.6rem);
   }
 
   /* The display title with chromatic-aberration ghosts */
@@ -189,7 +460,7 @@ const marqueeGroup = Array.from({ length: 2 }).flatMap(() => marqueeRoles);
     margin: 0;
     max-width: 100%;
     font-family: var(--font-family-display);
-    font-size: var(--display-2xl);
+    font-size: clamp(4rem, 1.6rem + 9.5vw, 12.6rem);
     font-weight: var(--font-weight-black);
     font-optical-sizing: auto;
     line-height: var(--leading-tight);
@@ -235,8 +506,8 @@ const marqueeGroup = Array.from({ length: 2 }).flatMap(() => marqueeRoles);
     column-gap: var(--space-sm);
     row-gap: var(--space-3xs);
     margin: 0;
-    max-width: 64rem;
-    font-size: clamp(1.6rem, 1.3rem + 1vw, 2.2rem);
+    max-width: 58rem;
+    font-size: clamp(1.5rem, 1.2rem + 0.9vw, 2rem);
     line-height: var(--leading-snug);
     font-weight: var(--font-weight-medium);
     color: var(--color-text-secondary);
@@ -250,14 +521,290 @@ const marqueeGroup = Array.from({ length: 2 }).flatMap(() => marqueeRoles);
   }
 
   .site-banner-social {
-    margin-top: var(--space-sm);
+    margin-top: var(--space-2xs);
   }
 
-  .site-banner-scroll {
+  /* On-screen display, scanlines, glare
+  /* -------------------------------------------------------- */
+  .crt-osd {
     position: absolute;
-    bottom: calc(var(--space-2xl) + 4.4rem);
-    left: 50%;
-    translate: -50% 0;
+    top: clamp(1.2rem, 3vw, 2.4rem);
+    right: clamp(1.6rem, 3.5vw, 2.8rem);
+    z-index: 4;
+    color: var(--color-pink-400);
+    opacity: 0.85;
+    text-shadow:
+      -1px 0 0 rgba(255, 46, 136, 0.5),
+      1px 0 0 rgba(45, 226, 230, 0.5);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .crt-osd[data-lost='true'] {
+      animation: osd-blink 1.1s steps(2, start) infinite;
+    }
+  }
+
+  @keyframes osd-blink {
+    to {
+      visibility: hidden;
+    }
+  }
+
+  /* Tuned-in static — intensity rides the dial via --static-level */
+  .crt-static {
+    position: absolute;
+    inset: -60%;
+    z-index: 2;
+    pointer-events: none;
+    opacity: calc(var(--static-level, 0) * 0.85);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    mix-blend-mode: screen;
+    animation: static-dance 0.5s steps(1, end) infinite;
+    animation-play-state: paused;
+  }
+
+  .crt-screen[data-static-on='true'] .crt-static {
+    animation-play-state: running;
+  }
+
+  @keyframes static-dance {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+
+    12.5% {
+      transform: translate3d(-7%, 4%, 0);
+    }
+
+    25% {
+      transform: translate3d(5%, -6%, 0);
+    }
+
+    37.5% {
+      transform: translate3d(-3%, -8%, 0);
+    }
+
+    50% {
+      transform: translate3d(8%, 3%, 0);
+    }
+
+    62.5% {
+      transform: translate3d(-6%, -2%, 0);
+    }
+
+    75% {
+      transform: translate3d(4%, 7%, 0);
+    }
+
+    87.5% {
+      transform: translate3d(-8%, -5%, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .crt-static {
+      animation: none;
+    }
+
+    .crt-osd[data-lost='true'] {
+      animation: none;
+    }
+  }
+
+  .crt-scanlines {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(2, 0, 8, 0.22) 0 1px,
+      transparent 1px 4px
+    );
+    mix-blend-mode: multiply;
+  }
+
+  /* Slow refresh band drifting down the tube */
+  .crt-scanband {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 22%;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgba(255, 255, 255, 0.05) 35%,
+      rgba(255, 46, 136, 0.05) 55%,
+      transparent
+    );
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .crt-scanband {
+      animation: scanband-sweep 7s linear infinite;
+    }
+  }
+
+  @keyframes scanband-sweep {
+    0% {
+      transform: translateY(-110%);
+      opacity: 1;
+    }
+
+    22% {
+      transform: translateY(520%);
+      opacity: 1;
+    }
+
+    22.01%,
+    100% {
+      transform: translateY(520%);
+      opacity: 0;
+    }
+  }
+
+  .crt-glare {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    border-radius: inherit;
+    background:
+      radial-gradient(60% 38% at 22% 6%, rgba(255, 255, 255, 0.08), transparent 70%),
+      linear-gradient(118deg, rgba(255, 255, 255, 0.05) 0%, transparent 22%);
+  }
+
+  /* Control panel
+  /* -------------------------------------------------------- */
+  .crt-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) 0;
+  }
+
+  .crt-led {
+    width: 0.8rem;
+    height: 0.8rem;
+    margin-bottom: var(--space-2xs);
+    border-radius: 50%;
+    background: var(--color-pink-500);
+    box-shadow:
+      0 0 6px var(--color-pink-500),
+      0 0 18px rgba(255, 46, 136, 0.5);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .crt-led {
+      animation: led-breathe 3.4s var(--ease-in-out-soft) infinite;
+    }
+  }
+
+  @keyframes led-breathe {
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.55;
+    }
+  }
+
+  .crt-knob {
+    position: relative;
+    width: 3.6rem;
+    height: 3.6rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-border-strong);
+    background: radial-gradient(
+      circle at 34% 28%,
+      var(--color-surface-raised),
+      var(--color-surface-muted) 72%
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 2px 4px rgba(2, 0, 8, 0.3);
+
+    /* Indicator tick */
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0.4rem;
+      left: calc(50% - 1px);
+      width: 2px;
+      height: 1rem;
+      border-radius: var(--radius-full);
+      background: var(--color-accent-text);
+    }
+
+    &--vol {
+      transform: rotate(42deg);
+    }
+
+    /* The secretly-interactive one — resting angle matches level 0,
+       so the script's first render is a no-op visually */
+    &--tune {
+      transform: rotate(-135deg);
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: border-color var(--transition-fast);
+
+      &:hover {
+        border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-border-strong));
+      }
+
+      &.is-tuning {
+        cursor: grabbing;
+        border-color: var(--color-accent);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.1),
+          0 2px 4px rgba(2, 0, 8, 0.3),
+          var(--glow-pink);
+      }
+    }
+  }
+
+  .crt-knob-label {
+    margin-top: calc(var(--space-2xs) * -1);
+    font-size: 0.9rem;
+  }
+
+  .crt-grille {
+    width: 4.4rem;
+    flex: 1;
+    min-height: 4rem;
+    max-height: 15rem;
+    margin-top: var(--space-2xs);
+    border-radius: var(--radius-sm);
+    background: repeating-linear-gradient(
+      0deg,
+      var(--color-border-strong) 0 1px,
+      transparent 1px 5px
+    );
+    opacity: 0.75;
+  }
+
+  .crt-brand {
+    margin-top: auto;
+    text-align: center;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+
+  /* Scroll cue + marquee
+  /* -------------------------------------------------------- */
+  .site-banner-scroll {
+    margin-top: var(--space-xl);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -266,7 +813,7 @@ const marqueeGroup = Array.from({ length: 2 }).flatMap(() => marqueeRoles);
     &::after {
       content: '';
       width: 1px;
-      height: 4rem;
+      height: 3.6rem;
       background: linear-gradient(to bottom, var(--color-accent), transparent);
     }
   }
@@ -299,7 +846,7 @@ const marqueeGroup = Array.from({ length: 2 }).flatMap(() => marqueeRoles);
     }
   }
 
-  /* Marquee strip — duplicated description, purely decorative */
+  /* Marquee strip — duplicated roster, purely decorative */
   .site-marquee {
     position: absolute;
     left: 0;
@@ -354,42 +901,56 @@ const marqueeGroup = Array.from({ length: 2 }).flatMap(() => marqueeRoles);
     }
   }
 
-  /* Load choreography — one staged reveal, then calm */
+  /* Load choreography — power-on, then the picture settles
+  /* -------------------------------------------------------- */
   @media (prefers-reduced-motion: no-preference) {
-    .site-banner-title {
-      animation: rise-in 900ms var(--ease-out-expo) both;
+    .crt {
+      animation: rise-in 800ms var(--ease-out-expo) both;
+    }
+
+    .crt-scene {
+      animation: crt-boot 900ms var(--ease-out-expo) 250ms both;
     }
 
     .site-banner-title::before {
       animation:
-        ca-settle-pink 700ms var(--ease-out-expo) 500ms both,
-        ca-drift-pink 9s steps(1, end) 3s infinite;
+        ca-settle-pink 700ms var(--ease-out-expo) 1100ms both,
+        ca-drift-pink 9s steps(1, end) 3.4s infinite;
     }
 
     .site-banner-title::after {
       animation:
-        ca-settle-cyan 700ms var(--ease-out-expo) 560ms both,
-        ca-drift-cyan 9s steps(1, end) 3s infinite;
+        ca-settle-cyan 700ms var(--ease-out-expo) 1160ms both,
+        ca-drift-cyan 9s steps(1, end) 3.4s infinite;
     }
 
-    .site-banner-desc {
-      animation: rise-in 800ms var(--ease-out-expo) 350ms both;
-    }
-
-    .site-banner-social {
-      animation: rise-in 800ms var(--ease-out-expo) 500ms both;
+    .crt-osd {
+      animation: fade-in 600ms linear 1300ms both;
     }
 
     .site-banner-annotation {
-      animation: fade-in 900ms linear 900ms both;
-    }
-
-    .site-banner-scroll {
       animation: fade-in 900ms linear 1200ms both;
     }
 
-    .site-banner-horizon {
-      animation: horizon-ignite 1400ms var(--ease-out-expo) 700ms both;
+    .site-banner-scroll {
+      animation: fade-in 900ms linear 1500ms both;
+    }
+  }
+
+  @keyframes crt-boot {
+    0% {
+      transform: scaleY(0.004) scaleX(0.65);
+      filter: brightness(7) saturate(0.2);
+    }
+
+    45% {
+      transform: scaleY(0.012) scaleX(1);
+      filter: brightness(5) saturate(0.4);
+    }
+
+    100% {
+      transform: none;
+      filter: none;
     }
   }
 
@@ -417,19 +978,7 @@ const marqueeGroup = Array.from({ length: 2 }).flatMap(() => marqueeRoles);
     }
   }
 
-  @keyframes horizon-ignite {
-    from {
-      opacity: 0;
-      transform: scaleX(0.2);
-    }
-
-    to {
-      opacity: 0.55;
-      transform: none;
-    }
-  }
-
-  /* Ghosts slide out from behind the title once it lands */
+  /* Ghosts slide out from behind the title once the tube warms up */
   @keyframes ca-settle-pink {
     from {
       opacity: 0;
@@ -499,33 +1048,76 @@ const marqueeGroup = Array.from({ length: 2 }).flatMap(() => marqueeRoles);
     }
   }
 
-  /* Hero recedes into haze as you scroll — scroll-driven, no JS */
+  /* The set recedes into haze as you scroll — scroll-driven, no JS */
   @supports (animation-timeline: scroll()) {
     @media (prefers-reduced-motion: no-preference) {
-      .site-banner-stage {
-        animation: hero-recede linear both;
-        animation-timeline: scroll();
-        animation-range: 0 88svh;
+      .crt {
+        animation:
+          rise-in 800ms var(--ease-out-expo) both,
+          hero-recede linear both;
+        animation-timeline: auto, scroll();
+        animation-range: normal, 0 88svh;
       }
     }
   }
 
   @keyframes hero-recede {
     to {
-      opacity: 0.1;
-      transform: translateY(-5rem) scale(0.97);
+      opacity: 0.08;
+      transform: translateY(-4rem) scale(0.965);
       filter: blur(10px);
     }
   }
 
   @media (max-width: 680px) {
     .site-banner {
-      min-height: calc(86svh - var(--header-height));
+      min-height: calc(88svh - var(--header-height));
       padding-top: var(--space-2xl);
     }
 
     .site-banner-annotation--right {
       display: none;
+    }
+
+    .crt-cabinet {
+      grid-template-columns: 1fr;
+    }
+
+    .crt-controls {
+      flex-direction: row;
+      justify-content: center;
+      gap: var(--space-md);
+      padding: var(--space-2xs) var(--space-2xs) 0;
+    }
+
+    .crt-led {
+      margin-bottom: 0;
+    }
+
+    .crt-knob {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    .crt-knob-label {
+      display: none;
+    }
+
+    .crt-grille {
+      flex: 1;
+      min-height: 0;
+      height: 3rem;
+      max-width: 12rem;
+      margin-top: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--color-border-strong) 0 1px,
+        transparent 1px 5px
+      );
+    }
+
+    .crt-scene {
+      min-height: clamp(26rem, 48svh, 40rem);
     }
 
     .site-banner-scroll {
