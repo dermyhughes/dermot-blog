@@ -3,10 +3,3 @@
 @use './base';
 @use './code-highlighting';
 @use './content-koenig';
-
-@font-face {
-  font-family: 'Permanent Marker';
-  src: url('/fonts/PermanentMarker-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}

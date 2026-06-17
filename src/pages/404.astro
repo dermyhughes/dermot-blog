@@ -1,7 +1,6 @@
 ---
 import Layout from '../components/Layout.astro';
 import MetaData from '../components/meta/MetaData.astro';
-import ArticleContent from '../ui/layout/ArticleContent.astro';
 import CatImage from '../ui/layout/CatImage';
 import { getGhostSettings } from '../lib/ghost';
 import { canonicalFromPath } from '../lib/site';
@@ -20,15 +19,138 @@ const canonical = canonicalFromPath('/404/');
     />
   </Fragment>
 
-  <div class='container'>
-    <ArticleContent title='Error 404' centered>
-      <Fragment>
-        <p>
-          Huh. It looks like that page cannot be found. You can <a href='/'>return home</a> to start over.
-        </p>
-        <p>Here is a cat to make it up to you.</p>
-      </Fragment>
+  <div class='container error-page'>
+    <p class='spec-label'>[ error <b>/ signal lost</b> ]</p>
+    <h1 class='error-code' data-line='404'>404</h1>
+    <p class='error-message'>
+      That page has dissolved into the haze. You can <a href='/'>return to the index</a> to start
+      over.
+    </p>
+    <p class='error-consolation spec-label'>// here is a cat to make it up to you</p>
+    <div class='error-cat'>
       <CatImage client:load />
-    </ArticleContent>
+    </div>
   </div>
 </Layout>
+
+<style lang='scss'>
+  .error-page {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: var(--space-md);
+    padding-block: var(--space-2xl);
+  }
+
+  .error-page .spec-label {
+    margin: 0;
+  }
+
+  .error-code {
+    position: relative;
+    z-index: 0;
+    margin: 0;
+    font-size: var(--display-2xl);
+    font-weight: var(--font-weight-black);
+    letter-spacing: var(--letter-spacing-display);
+    line-height: var(--leading-none);
+    color: var(--color-text-strong);
+
+    &::before,
+    &::after {
+      content: attr(data-line);
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    &::before {
+      z-index: -1;
+      color: var(--color-accent);
+      opacity: 0.8;
+      filter: blur(2px);
+      transform: translate3d(-0.05em, 0.012em, 0);
+    }
+
+    &::after {
+      z-index: -2;
+      color: var(--color-accent-2);
+      opacity: 0.7;
+      filter: blur(3px);
+      transform: translate3d(0.05em, -0.012em, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .error-code::before {
+      animation: error-jitter-pink 3.2s steps(1, end) infinite;
+    }
+
+    .error-code::after {
+      animation: error-jitter-cyan 3.2s steps(1, end) infinite;
+    }
+  }
+
+  @keyframes error-jitter-pink {
+    0%,
+    6%,
+    100% {
+      transform: translate3d(-0.05em, 0.012em, 0);
+    }
+
+    1.5% {
+      transform: translate3d(-0.09em, 0.03em, 0);
+    }
+
+    3% {
+      transform: translate3d(-0.02em, -0.015em, 0);
+    }
+
+    4.5% {
+      transform: translate3d(-0.07em, 0.02em, 0);
+    }
+  }
+
+  @keyframes error-jitter-cyan {
+    0%,
+    6%,
+    100% {
+      transform: translate3d(0.05em, -0.012em, 0);
+    }
+
+    1.5% {
+      transform: translate3d(0.1em, -0.028em, 0);
+    }
+
+    3% {
+      transform: translate3d(0.018em, 0.016em, 0);
+    }
+
+    4.5% {
+      transform: translate3d(0.08em, -0.02em, 0);
+    }
+  }
+
+  .error-message {
+    margin: 0;
+    max-width: 46rem;
+    font-size: var(--text-lg);
+    color: var(--color-text-secondary);
+    text-wrap: balance;
+  }
+
+  .error-consolation {
+    margin-top: var(--space-md);
+  }
+
+  .error-cat {
+    width: min(100%, 48rem);
+
+    :global(img) {
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border-subtle);
+      box-shadow: var(--shadow-lg);
+    }
+  }
+</style>

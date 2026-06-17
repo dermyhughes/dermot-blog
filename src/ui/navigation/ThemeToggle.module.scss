@@ -1,33 +1,68 @@
-@import url('https://cdn.jsdelivr.net/npm/theme-toggles@4.10.1/css/classic.min.css');
-
-.wrapper {
-  display: inline-flex;
-  align-items: center;
-}
-
 .button {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 3.2rem;
-  height: 3.2rem;
+  width: 3.4rem;
+  height: 3.4rem;
   padding: 0;
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  background: var(--color-surface);
-  color: var(--color-base);
-  font-size: 1.8rem;
-  line-height: 0;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text-secondary);
   cursor: pointer;
-  transition: background var(--transition-fast), color var(--transition-fast),
-    border-color var(--transition-fast);
+  overflow: hidden;
+  transition: color var(--transition-fast), border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .button:hover {
-  background: var(--color-surface-muted);
-  border-color: var(--color-border-strong);
+  color: var(--color-accent-text);
+  border-color: var(--color-accent);
+  box-shadow: var(--glow-pink);
 }
 
-.wrapper[data-theme='dark'] .button {
-  background: var(--color-surface-inverse);
+.dial {
+  position: relative;
+  display: block;
+  width: 2rem;
+  height: 2rem;
+}
+
+.sun,
+.moon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform var(--duration-medium) var(--ease-spring),
+    opacity var(--duration-fast) linear;
+}
+
+/* Light mode shows the sun; the moon waits below the horizon */
+.sun {
+  opacity: 1;
+  transform: none;
+}
+
+.moon {
+  opacity: 0;
+  transform: translateY(120%) rotate(-90deg);
+}
+
+.button[data-mode='dark'] .sun {
+  opacity: 0;
+  transform: translateY(-120%) rotate(90deg);
+}
+
+.button[data-mode='dark'] .moon {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sun,
+  .moon {
+    transition: none;
+  }
 }

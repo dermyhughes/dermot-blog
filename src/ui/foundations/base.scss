@@ -1,11 +1,12 @@
 /* Defaults
-  /* ---------------------------------------------------------- */
+/* ---------------------------------------------------------- */
 
 html {
     overflow-x: hidden;
     overflow-y: scroll;
     font-size: 62.5%;
-    background: var(--color-base);
+    background: var(--color-bg);
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
@@ -13,13 +14,14 @@ body {
     overflow-x: hidden;
     color: var(--color-text-primary);
     font-family: var(--font-family-sans);
+    font-optical-sizing: auto;
     font-size: var(--text-md);
     line-height: var(--leading-relaxed);
     font-weight: var(--font-weight-normal);
     font-style: normal;
     letter-spacing: var(--letter-spacing-tight);
     text-rendering: optimizeLegibility;
-    background: var(--color-surface);
+    background: var(--color-bg);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -moz-font-feature-settings: "liga" on;
@@ -27,7 +29,14 @@ body {
 
 ::selection {
     text-shadow: none;
-    background: var(--color-brand-100);
+    background: var(--color-selection-bg);
+    color: var(--color-selection-text);
+}
+
+:focus-visible {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
 }
 
 hr {
@@ -38,7 +47,13 @@ hr {
     padding: 0;
     height: 1px;
     border: 0;
-    border-top: 1px solid var(--color-border-strong);
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--color-border-strong) 20%,
+        var(--color-border-strong) 80%,
+        transparent
+    );
 }
 
 audio,
@@ -106,6 +121,10 @@ li {
     margin: var(--space-2xs) 0;
     padding-left: var(--space-3xs);
     line-height: var(--leading-relaxed);
+
+    &::marker {
+        color: var(--color-accent-text);
+    }
 }
 
 dt {
@@ -124,7 +143,7 @@ dd {
 blockquote {
     margin: var(--space-2xs) 0 var(--space-lg);
     padding: 0 var(--space-lg);
-    border-left: var(--color-brand-100) 0.5em solid;
+    border-left: var(--color-accent) 3px solid;
 
     p {
         margin: var(--space-sm) 0;
@@ -153,20 +172,30 @@ blockquote {
 }
 
 code {
-    background: var(--color-surface-muted);
+    font-family: var(--font-family-mono);
+    font-size: 0.86em;
+    background: var(--code-inline-bg);
+    color: var(--code-inline-text);
     border-radius: var(--radius-sm);
     padding: var(--space-3xs) var(--space-2xs);
 }
 
-
-/* Quotation marks */
+mark {
+    background: var(--color-selection-bg);
+    color: var(--color-text-strong);
+    padding: 0 0.2em;
+}
 
 a {
   color: var(--color-link);
   text-decoration: none;
+  transition: color var(--transition-fast);
 
   &:hover {
+    color: var(--color-link-hover);
     text-decoration: underline;
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.2em;
   }
 }
 
@@ -178,55 +207,57 @@ h5,
 h6 {
   margin-top: 0;
   color: var(--color-text-strong);
-  line-height: 1.15;
-  font-weight: 700;
+  font-family: var(--font-family-display);
+  font-optical-sizing: auto;
+  line-height: var(--leading-tight);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-display);
   text-rendering: optimizeLegibility;
+  text-wrap: balance;
 }
 
 h1 {
   margin: 0 0 0.5em 0;
-  font-size: 4rem;
-  font-weight: 700;
-}
-
-@media (max-width: 500px) {
-  h1 {
-    font-size: 2rem;
-  }
+  font-size: var(--display-lg);
+  font-weight: var(--font-weight-black);
 }
 
 h2 {
   margin: 1.5em 0 0.5em 0;
-  font-size: 2rem;
-}
-
-@media (max-width: 500px) {
-  h2 {
-    font-size: 1.8rem;
-  }
+  font-size: var(--display-sm);
 }
 
 h3 {
   margin: 1.5em 0 0.5em 0;
-  font-size: 1.8rem;
-  font-weight: 500;
-}
-
-@media (max-width: 500px) {
-  h3 {
-    font-size: 1.7rem;
-  }
+  font-size: 2rem;
+  font-weight: var(--font-weight-semibold);
 }
 
 h4 {
   margin: 1.5em 0 0.5em 0;
-  font-size: 1.6rem;
-  font-weight: 500;
+  font-size: 1.8rem;
+  font-weight: var(--font-weight-semibold);
 }
 
 h5,
 h6 {
   margin: 1.5em 0 0.5em 0;
-  font-size: 1.4rem;
-  font-weight: 500;
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Mono spec annotations — the recurring "design spec" motif */
+.spec-label {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-normal);
+  letter-spacing: var(--letter-spacing-mono);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+
+  b,
+  strong {
+    color: var(--color-accent-text);
+    font-weight: var(--font-weight-normal);
+  }
 }

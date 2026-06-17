@@ -1,8 +1,15 @@
 ---
 import SiteHeader from './SiteHeader.astro';
 import SiteFooter from './SiteFooter.astro';
+import SiteBanner from './SiteBanner.astro';
 import type { GhostSettings } from '../../lib/ghost-types';
 
+import '@fontsource-variable/bricolage-grotesque/opsz.css';
+import '@fontsource-variable/newsreader/index.css';
+import '@fontsource-variable/newsreader/opsz-italic.css';
+import '@fontsource/space-mono/400.css';
+import '@fontsource/space-mono/400-italic.css';
+import '@fontsource/space-mono/700.css';
 import '../../styles/app.scss';
 
 interface Props {
@@ -40,7 +47,7 @@ const currentYear = new Date().getFullYear();
     <meta name='viewport' content='width=device-width,initial-scale=1' />
     <link rel='icon' href='/favicon.png' />
     <link rel='manifest' href='/manifest.webmanifest' />
-    <meta name='theme-color' content='#15171A' />
+    <meta name='theme-color' content='#0e0918' />
     <script is:inline>
       (() => {
         const root = document.documentElement;
@@ -61,6 +68,11 @@ const currentYear = new Date().getFullYear();
 
         root.dataset.theme = theme;
         root.style.colorScheme = theme;
+
+        const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+        if (themeColorMeta) {
+          themeColorMeta.setAttribute('content', theme === 'dark' ? '#0e0918' : '#f7f4fb');
+        }
       })();
     </script>
     <script>
@@ -112,15 +124,21 @@ const currentYear = new Date().getFullYear();
     <slot name='head' />
   </head>
   <body class={bodyClass}>
+    <a class='skip-link' href='#site-main'>Skip to content</a>
+
+    <div class='site-backdrop' aria-hidden='true'>
+      <div class='site-backdrop-aura site-backdrop-aura--pink'></div>
+      <div class='site-backdrop-aura site-backdrop-aura--violet'></div>
+      <div class='site-backdrop-aura site-backdrop-aura--cyan'></div>
+      <div class='site-backdrop-grid'></div>
+      <div class='site-backdrop-grain'></div>
+    </div>
+
     <div class='viewport'>
       <div class='viewport-top'>
-        <SiteHeader
-          settings={settings}
-          currentPath={currentPath}
-          isHome={isHome}
-          descriptionParts={descriptionParts}
-        />
-        <main id='site-main'>
+        <SiteHeader settings={settings} currentPath={currentPath} isHome={isHome} />
+        <main id='site-main' tabindex='-1' class={isHome ? 'site-main--home' : undefined}>
+          {isHome && <SiteBanner title={settings.title} descriptionParts={descriptionParts} />}
           <slot />
         </main>
       </div>
@@ -138,4 +156,138 @@ const currentYear = new Date().getFullYear();
 @use '../styles/layout-primitives' as layout;
 
 @include layout.layout-primitives-contract;
+
+/* Cross-document view transitions — progressive enhancement.
+   Browsers without support simply navigate normally. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 220ms;
+  animation-timing-function: var(--ease-in-out-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+.skip-link {
+  position: fixed;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  z-index: var(--z-skip);
+  padding: var(--space-xs) var(--space-md);
+  font-family: var(--font-family-mono);
+  font-size: var(--text-sm);
+  letter-spacing: var(--letter-spacing-mono);
+  text-transform: uppercase;
+  color: var(--color-text-strong);
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--glow-pink);
+
+  /* Visually hidden until focused — clip keeps it focusable while
+     guaranteeing zero paint, unlike transform-based hiding */
+  &:not(:focus) {
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+}
+
+/* Vapour backdrop — fixed atmosphere layers behind everything */
+.site-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-backdrop);
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--color-bg);
+}
+
+.site-backdrop-aura {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+.site-backdrop-aura--pink {
+  width: 90vmax;
+  height: 90vmax;
+  top: -45vmax;
+  right: -30vmax;
+  background: radial-gradient(circle, var(--aura-pink) 0%, transparent 62%);
+  animation: aura-drift-a 38s var(--ease-in-out-soft) infinite alternate;
+}
+
+.site-backdrop-aura--violet {
+  width: 80vmax;
+  height: 80vmax;
+  bottom: -40vmax;
+  left: -28vmax;
+  background: radial-gradient(circle, var(--aura-violet) 0%, transparent 60%);
+  animation: aura-drift-b 46s var(--ease-in-out-soft) infinite alternate;
+}
+
+.site-backdrop-aura--cyan {
+  width: 60vmax;
+  height: 60vmax;
+  top: 30%;
+  left: 56%;
+  background: radial-gradient(circle, var(--aura-cyan) 0%, transparent 58%);
+  animation: aura-drift-c 52s var(--ease-in-out-soft) infinite alternate;
+}
+
+@keyframes aura-drift-a {
+  to {
+    transform: translate3d(-8vmax, 10vmax, 0) scale(1.12);
+  }
+}
+
+@keyframes aura-drift-b {
+  to {
+    transform: translate3d(10vmax, -6vmax, 0) scale(1.08);
+  }
+}
+
+@keyframes aura-drift-c {
+  to {
+    transform: translate3d(-12vmax, -8vmax, 0) scale(0.92);
+  }
+}
+
+.site-backdrop-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 4.8rem 4.8rem;
+  mask-image: radial-gradient(ellipse 120% 90% at 50% 0%, black 30%, transparent 78%);
+}
+
+.site-backdrop-grain {
+  position: absolute;
+  inset: 0;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-backdrop-aura {
+    animation: none;
+  }
+}
 </style>

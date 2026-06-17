@@ -4,15 +4,22 @@
     flex-direction: column;
     justify-content: space-between;
     min-height: 100vh;
+    min-height: 100dvh;
   }
 
   .container {
+    width: 100%;
     max-width: var(--layout-width-content);
     margin: 0 auto;
     padding: 0 var(--layout-gutter);
   }
 
   #site-main {
-    padding: 4vw 0;
+    padding: var(--space-2xl) 0 var(--space-4xl);
+    outline: none;
+
+    &.site-main--home {
+      padding-top: 0;
+    }
   }
 }

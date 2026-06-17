@@ -22,8 +22,12 @@ const canonical = canonicalFromPath('/');
   </Fragment>
 
   <div class='container'>
-    <PostFeed>
-      {paginatedPosts.map((post) => <PostCard post={post} />)}
+    <PostFeed label='latest' count={posts.length}>
+      {
+        paginatedPosts.map((post, index) => (
+          <PostCard post={post} index={index + 1} variant={index === 0 ? 'feature' : 'grid'} />
+        ))
+      }
     </PostFeed>
     <Pagination {...pagination} />
   </div>

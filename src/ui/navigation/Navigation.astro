@@ -6,9 +6,10 @@ interface Props {
   data?: GhostNavigationItem[];
   currentPath: string;
   navClass?: string;
+  withIndex?: boolean;
 }
 
-const { data = [], currentPath, navClass = 'site-nav-item' } = Astro.props;
+const { data = [], currentPath, navClass = 'site-nav-item', withIndex = false } = Astro.props;
 
 const ensureTrailingSlash = (path: string) => {
   if (path === '/') {
@@ -35,16 +36,23 @@ const getInternalPath = (rawUrl: string) => {
   return ensureTrailingSlash(rawUrl.startsWith('/') ? rawUrl : `/${rawUrl}`);
 };
 
+const formatIndex = (index: number) => String(index + 1).padStart(2, '0');
+
 const normalizedCurrentPath = ensureTrailingSlash(currentPath);
 ---
 
 {
-  data.map((navItem) => {
+  data.map((navItem, index) => {
     const internalPath = getInternalPath(navItem.url);
 
     if (!internalPath) {
       return (
         <a class={navClass} href={navItem.url} target='_blank' rel='noopener noreferrer'>
+          {withIndex && (
+            <span class='site-nav-index' aria-hidden='true'>
+              {formatIndex(index)}
+            </span>
+          )}
           {navItem.label}
         </a>
       );
@@ -66,86 +74,16 @@ const normalizedCurrentPath = ensureTrailingSlash(currentPath);
         href={internalPath}
         aria-current={isActive ? 'page' : undefined}
       >
+        {withIndex && (
+          <span class='site-nav-index' aria-hidden='true'>
+            {formatIndex(index)}
+          </span>
+        )}
         {navItem.label}
       </a>
     );
   })
 }
-
-<script>
-  import { annotate } from 'rough-notation';
-
-  (() => {
-    const enhanceActiveNavLinks = () => {
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const pink = getComputedStyle(document.documentElement)
-        .getPropertyValue('--color-pink')
-        .trim();
-      const color = pink || '#ff4fa3';
-      const variants = [
-        {
-          strokeWidth: 5.6,
-          padding: [0, 2, 0, 1] as [number, number, number, number],
-          duration: 420,
-        },
-        {
-          strokeWidth: 6.2,
-          padding: [1, 1, 0, 0] as [number, number, number, number],
-          duration: 520,
-        },
-        {
-          strokeWidth: 5.2,
-          padding: [0, 1, 1, 2] as [number, number, number, number],
-          duration: 470,
-        },
-      ];
-
-      const activeLinks = Array.from(
-        document.querySelectorAll<HTMLAnchorElement>('a.active-link'),
-      ).filter((link) => link.dataset.navHighlightEnhanced !== 'true');
-
-      activeLinks.forEach((link, index) => {
-        if (
-          link.getClientRects().length === 0 ||
-          link.offsetWidth === 0 ||
-          link.offsetHeight === 0
-        ) {
-          return;
-        }
-
-        const variant = variants[index % variants.length];
-        const annotation = annotate(link, {
-          type: 'highlight',
-          color,
-          animate: !prefersReducedMotion,
-          animationDuration: variant.duration,
-          strokeWidth: variant.strokeWidth,
-          padding: variant.padding,
-          iterations: 2,
-        });
-
-        link.dataset.navHighlightEnhanced = 'true';
-        link.classList.add('active-link--rough');
-
-        annotation.show();
-      });
-    };
-
-    const queueEnhancement = () => {
-      window.requestAnimationFrame(() => {
-        enhanceActiveNavLinks();
-      });
-    };
-
-    if (document.readyState === 'loading') {
-      window.addEventListener('load', queueEnhancement, { once: true });
-    } else {
-      queueEnhancement();
-    }
-
-    window.addEventListener('resize', queueEnhancement, { passive: true });
-  })();
-</script>
 
 <style is:global lang='scss'>
   @use '../styles/navigation-contract' as nav;

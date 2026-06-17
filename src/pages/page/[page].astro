@@ -33,8 +33,12 @@ const canonical = canonicalFromPath(currentPath);
   </Fragment>
 
   <div class='container'>
-    <PostFeed>
-      {paginatedPosts.map((post) => <PostCard post={post} />)}
+    <PostFeed label={`index — page ${pageNumber}`} count={posts.length}>
+      {
+        paginatedPosts.map((post, index) => (
+          <PostCard post={post} index={(pageNumber - 1) * POSTS_PER_PAGE + index + 1} />
+        ))
+      }
     </PostFeed>
     <Pagination {...pagination} />
   </div>

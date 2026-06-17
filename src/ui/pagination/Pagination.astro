@@ -7,63 +7,91 @@ interface Props {
 }
 
 const { previousPagePath, nextPagePath, humanPageNumber, numberOfPages } = Astro.props;
+
+const pad = (value: number) => String(value).padStart(2, '0');
 ---
 
-<nav class='pagination' role='navigation'>
-  <div>
-    {previousPagePath && (
-      <a href={previousPagePath} rel='prev'>
-        Previous
-      </a>
-    )}
+<nav class='pagination' aria-label='Pagination'>
+  <div class='pagination-slot'>
+    {
+      previousPagePath && (
+        <a class='pagination-link' href={previousPagePath} rel='prev'>
+          <span aria-hidden='true'>&lt;-</span> prev
+        </a>
+      )
+    }
   </div>
-  {numberOfPages > 1 && (
-    <div class='pagination-location'>
-      Page {humanPageNumber} of {numberOfPages}
-    </div>
-  )}
-  <div>
-    {nextPagePath && (
-      <a href={nextPagePath} rel='next'>
-        Next
-      </a>
-    )}
+  {
+    numberOfPages > 1 && (
+      <div class='pagination-location'>
+        page <b>{pad(humanPageNumber)}</b> <span aria-hidden='true'>/</span> {pad(numberOfPages)}
+      </div>
+    )
+  }
+  <div class='pagination-slot pagination-slot--end'>
+    {
+      nextPagePath && (
+        <a class='pagination-link' href={nextPagePath} rel='next'>
+          next <span aria-hidden='true'>-&gt;</span>
+        </a>
+      )
+    }
   </div>
 </nav>
 
 <style lang='scss'>
-.pagination {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 4vw 0 0;
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: var(--space-2xl) 0 0;
+  }
 
-  a {
-    display: inline-block;
-    padding: 10px 15px;
-    border: var(--color-border) 1px solid;
-    color: var(--color-secondary);
-    text-decoration: none;
-    font-size: 1.4rem;
-    line-height: 1em;
-    border-radius: var(--radius);
-    font-weight: 700;
+  .pagination-slot {
+    min-width: 9rem;
+    display: flex;
 
-    &:hover {
-      background: var(--color-pink);
-      color: #fff;
+    &--end {
+      justify-content: flex-end;
     }
   }
-}
 
-.pagination-location {
-  position: absolute;
-  left: 50%;
-  width: 100px;
-  margin-left: -50px;
-  text-align: center;
-  color: var(--color-secondary);
-  font-size: 1.3rem;
-}
+  .pagination-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: var(--space-xs) var(--space-md);
+    font-family: var(--font-family-mono);
+    font-size: var(--text-sm);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-full);
+    transition:
+      color var(--transition-fast),
+      border-color var(--transition-fast),
+      box-shadow var(--transition-fast);
+
+    &:hover {
+      color: var(--color-accent-text);
+      border-color: var(--color-accent);
+      box-shadow: var(--glow-pink);
+      text-decoration: none;
+    }
+  }
+
+  .pagination-location {
+    font-family: var(--font-family-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--letter-spacing-mono);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+
+    b {
+      color: var(--color-accent-text);
+      font-weight: var(--font-weight-normal);
+    }
+  }
 </style>

@@ -59,6 +59,9 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",
+    "@fontsource-variable/bricolage-grotesque": "^5.2.10",
+    "@fontsource-variable/newsreader": "^5.2.10",
+    "@fontsource/space-mono": "^5.2.9",
     "@tryghost/content-api": "^1.11.20",
     "@tryghost/helpers": "1.1.74",
     "cheerio": "1.0.0-rc.11",
@@ -66,7 +69,6 @@
     "prismjs": "^1.30.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "rough-notation": "^0.5.1",
     "zod": "^3.25.76"
   }
 }
