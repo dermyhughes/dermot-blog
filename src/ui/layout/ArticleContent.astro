@@ -1,4 +1,6 @@
 ---
+import { enhanceContent } from '../../lib/enhance-content';
+
 interface Props {
   title: string;
   html?: string | null;
@@ -7,13 +9,14 @@ interface Props {
 
 const { title, html = null, centered = false } = Astro.props;
 const articleClass = centered ? 'content content-centered' : 'content';
+const enhancedHtml = html !== null ? enhanceContent(html).html : null;
 ---
 
 <article class={articleClass}>
   <h1 class='content-title'>{title}</h1>
   {
-    html !== null ? (
-      <section class='content-body load-external-scripts' set:html={html} />
+    enhancedHtml !== null ? (
+      <section class='content-body load-external-scripts' set:html={enhancedHtml} />
     ) : (
       <section class='content-body'>
         <slot />

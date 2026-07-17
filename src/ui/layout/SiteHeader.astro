@@ -48,6 +48,9 @@ const { settings, currentPath, isHome = false } = Astro.props;
     border-bottom: 1px solid var(--glass-border);
     backdrop-filter: blur(var(--blur-glass)) saturate(1.5);
     -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(1.5);
+    /* Own transition group — the chrome stays put while page content
+       morphs during cross-document view transitions */
+    view-transition-name: site-head;
   }
 
   /* Bar starts transparent and frosts over as you scroll —

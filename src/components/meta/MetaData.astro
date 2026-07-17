@@ -25,6 +25,7 @@ const publisherLogo = withSiteUrl(settings.logo || siteConfig.siteIcon);
 
 const postTags = post ? getPublicTags(post.tags).map((item) => item.name) : [];
 const primaryTag = postTags[0] || '';
+const primaryAuthor = post?.authors?.[0]?.name || null;
 
 const pageType = tag ? 'Series' : 'WebSite';
 const pageTitleFromEntity = page?.title || tag?.name;
@@ -66,6 +67,12 @@ const articleJsonLd = post
       url: canonical,
       datePublished: post.published_at,
       dateModified: post.updated_at,
+      author: primaryAuthor
+        ? {
+            '@type': 'Person',
+            name: primaryAuthor,
+          }
+        : undefined,
       image: shareImage
         ? {
             '@type': 'ImageObject',

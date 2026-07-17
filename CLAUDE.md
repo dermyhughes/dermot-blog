@@ -69,6 +69,10 @@ All URLs use trailing slashes (enforced in `astro.config.mjs`).
 
 `src/lib/content.ts` — Pagination helpers, post path builders, reading time calculator.
 
+`src/lib/enhance-content.ts` — Build-time enrichment of Ghost HTML (cheerio): heading ids + anchor links + TOC extraction, lazy/responsive images, hardened external links, code blocks wrapped in copyable "code frames". Applied in `PostArticle` (posts, with TOC) and `ArticleContent` (Ghost pages).
+
+`src/lib/images.ts` — Ghost image-resizing srcset builder (`/content/images/size/wNNN/` URLs).
+
 `src/lib/site.ts` — Canonical URL construction from `SITEURL`.
 
 ### Component Organisation
