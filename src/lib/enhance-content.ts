@@ -29,6 +29,24 @@ const mergeRel = (existing: string | undefined, additions: string[]) => {
   return Array.from(tokens).join(' ');
 };
 
+const SITE_ORIGIN = new URL(`${siteUrl}/`).origin;
+
+/* Origin comparison, not prefix — a lookalike host such as
+   https://example.com.evil.tld would pass a startsWith(siteUrl) test.
+   Unparseable absolute URLs are treated as external so they still
+   get hardened. */
+const isExternalUrl = (href: string) => {
+  if (!/^https?:\/\//i.test(href)) {
+    return false;
+  }
+
+  try {
+    return new URL(href).origin !== SITE_ORIGIN;
+  } catch {
+    return true;
+  }
+};
+
 /**
  * Build-time enrichment of Ghost HTML: anchored headings + TOC data,
  * lazy responsive images, hardened external links, and code blocks
@@ -102,7 +120,7 @@ export const enhanceContent = (html?: string | null): EnhancedContent => {
     const $link = $(element);
     const href = $link.attr('href') || '';
 
-    if (/^https?:\/\//i.test(href) && !href.startsWith(siteUrl)) {
+    if (isExternalUrl(href)) {
       $link.attr('target', '_blank');
       $link.attr('rel', mergeRel($link.attr('rel'), ['noopener', 'noreferrer']));
     }
