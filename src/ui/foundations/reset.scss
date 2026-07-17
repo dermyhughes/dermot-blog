@@ -123,6 +123,9 @@ table {
 
 img {
     max-width: 100%;
+    /* Keep the intrinsic ratio when width/height attributes are
+       present and max-width kicks in */
+    height: auto;
 }
 
 html {

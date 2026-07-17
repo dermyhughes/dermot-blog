@@ -10,7 +10,21 @@ html {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+/* Anchored sections land clear of the sticky header */
+:where([id]) {
+    scroll-margin-top: calc(var(--header-height) + var(--space-lg));
+}
+
 body {
+    /* hidden turns body into a scroll container, which silently kills
+       position: sticky and scroll-driven timelines for every descendant;
+       clip crops horizontal overflow without doing that */
     overflow-x: hidden;
     color: var(--color-text-primary);
     font-family: var(--font-family-sans);
@@ -25,6 +39,12 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -moz-font-feature-settings: "liga" on;
+}
+
+@supports (overflow-x: clip) {
+    body {
+        overflow-x: clip;
+    }
 }
 
 ::selection {

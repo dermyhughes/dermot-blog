@@ -20,11 +20,16 @@ export async function getStaticPaths() {
 const { tag, slug } = Astro.params;
 const settings = await getGhostSettings();
 const posts = await getAllPosts();
-const post = posts.find((item) => item.slug === slug && getPostTagSlug(item) === tag);
+const postIndex = posts.findIndex((item) => item.slug === slug && getPostTagSlug(item) === tag);
+const post = postIndex >= 0 ? posts[postIndex] : undefined;
 
 if (!post) {
   throw new Error(`Unable to find Ghost post for route /${tag}/${slug}/`);
 }
+
+// Posts are sorted newest-first, so the previous index is the newer post.
+const newerPost = postIndex > 0 ? posts[postIndex - 1] : null;
+const olderPost = postIndex < posts.length - 1 ? posts[postIndex + 1] : null;
 
 const currentPath = `/${tag}/${slug}/`;
 const canonical = canonicalFromPath(currentPath);
@@ -42,6 +47,6 @@ const canonical = canonicalFromPath(currentPath);
   </Fragment>
 
   <div class='container'>
-    <PostArticle post={post} />
+    <PostArticle post={post} newerPost={newerPost} olderPost={olderPost} />
   </div>
 </Layout>

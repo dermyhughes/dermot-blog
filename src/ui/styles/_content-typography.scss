@@ -163,6 +163,23 @@
       border-radius: var(--radius-md);
     }
 
+    /* Deep links appear on heading hover; sighted keyboard and AT
+       users navigate by heading instead, so the glyph stays hidden */
+    .heading-anchor {
+      margin-left: 0.4em;
+      font-family: var(--font-family-mono);
+      font-size: 0.7em;
+      font-weight: var(--font-weight-normal);
+      color: var(--color-accent-text);
+      text-decoration: none;
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+    }
+
+    :is(h2, h3):hover .heading-anchor {
+      opacity: 1;
+    }
+
     pre {
       margin: var(--space-sm) 0 var(--space-lg);
       padding: var(--space-md) var(--space-lg);
@@ -176,6 +193,91 @@
       color: var(--code-text);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-sm);
+    }
+
+    /* Terminal frame around code blocks — bar with language chip
+       and copy action, injected at build time */
+    .code-frame {
+      margin: var(--space-sm) 0 var(--space-lg);
+      border: 1px solid var(--code-border);
+      border-radius: var(--radius-lg);
+      background: var(--code-bg);
+      box-shadow: var(--shadow-sm);
+      overflow: clip;
+
+      pre {
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+
+    .code-frame-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-2xs) var(--space-sm) var(--space-2xs) var(--space-md);
+      border-bottom: 1px solid var(--code-border);
+    }
+
+    .code-frame-dots {
+      display: inline-flex;
+      gap: 0.55rem;
+
+      i {
+        width: 0.9rem;
+        height: 0.9rem;
+        border-radius: 50%;
+
+        &:nth-child(1) {
+          background: color-mix(in srgb, var(--color-pink-500) 75%, transparent);
+        }
+
+        &:nth-child(2) {
+          background: color-mix(in srgb, var(--color-violet-500) 75%, transparent);
+        }
+
+        &:nth-child(3) {
+          background: color-mix(in srgb, var(--color-cyan-500) 75%, transparent);
+        }
+      }
+    }
+
+    .code-frame-lang {
+      font-family: var(--font-family-mono);
+      font-size: var(--text-2xs);
+      letter-spacing: var(--letter-spacing-mono);
+      text-transform: uppercase;
+      color: var(--code-comment);
+    }
+
+    .code-frame-copy {
+      margin-left: auto;
+      padding: 0.2rem 1.1rem;
+      font-family: var(--font-family-mono);
+      font-size: var(--text-2xs);
+      letter-spacing: var(--letter-spacing-mono);
+      text-transform: uppercase;
+      color: var(--code-comment);
+      background: none;
+      border: 1px solid var(--code-border);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition:
+        color var(--transition-fast),
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+
+      &:hover {
+        color: var(--color-accent-text);
+        border-color: color-mix(in srgb, var(--color-accent) 55%, var(--code-border));
+      }
+
+      &[data-copied='true'] {
+        color: var(--color-accent-2-text);
+        border-color: color-mix(in srgb, var(--color-accent-2) 55%, var(--code-border));
+      }
     }
 
     pre code {

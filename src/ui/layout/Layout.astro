@@ -47,6 +47,8 @@ const currentYear = new Date().getFullYear();
     <meta name='viewport' content='width=device-width,initial-scale=1' />
     <link rel='icon' href='/favicon.png' />
     <link rel='manifest' href='/manifest.webmanifest' />
+    <link rel='alternate' type='application/rss+xml' title={settings.title} href='/rss/' />
+    <link rel='sitemap' href='/sitemap-index.xml' />
     <meta name='theme-color' content='#0e0918' />
     <script is:inline>
       (() => {
@@ -107,8 +109,38 @@ const currentYear = new Date().getFullYear();
 
         const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-        progress.style.width = `${(scrollTop / height) * 100}%`;
+        const ratio = height > 0 ? Math.min(1, Math.max(0, scrollTop / height)) : 0;
+        // scaleX instead of width keeps the update off the layout pass
+        progress.style.transform = `scaleX(${ratio})`;
       };
+
+      // Copy buttons on build-time code frames — delegated so it
+      // covers posts and Ghost pages alike, and stays inert elsewhere.
+      const resetTimers = new WeakMap<HTMLElement, number>();
+      document.addEventListener('click', (event) => {
+        const target = event.target as HTMLElement | null;
+        const button = target?.closest<HTMLButtonElement>('.code-frame-copy');
+        if (!button) return;
+
+        const code = button.closest('.code-frame')?.querySelector('pre');
+        if (!code) return;
+
+        navigator.clipboard
+          .writeText(code.innerText.replace(/\n$/, ''))
+          .then(() => {
+            button.textContent = 'copied ✓';
+            button.dataset.copied = 'true';
+            window.clearTimeout(resetTimers.get(button));
+            resetTimers.set(
+              button,
+              window.setTimeout(() => {
+                button.textContent = 'copy';
+                delete button.dataset.copied;
+              }, 2000),
+            );
+          })
+          .catch(() => {});
+      });
 
       window.addEventListener('scroll', setScrollProgress, { passive: true });
       window.addEventListener('load', () => {
