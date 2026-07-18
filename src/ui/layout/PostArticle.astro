@@ -1,6 +1,6 @@
 ---
 import type { GhostPost } from '../../lib/ghost-types';
-import { formatReadingTime, getPostPath, getPublicTags } from '../../lib/content';
+import { formatPostDate, formatReadingTime, getPostPath, getPublicTags } from '../../lib/content';
 import { enhanceContent } from '../../lib/enhance-content';
 import { buildGhostSrcset } from '../../lib/images';
 import getPostTransitionName from '../../lib/transitions';
@@ -16,13 +16,7 @@ const { post, newerPost = null, olderPost = null } = Astro.props;
 const publicTags = getPublicTags(post.tags);
 const primaryTag = publicTags[0] || null;
 const readingTime = formatReadingTime(post);
-const publishedDate = post.published_at
-  ? new Date(post.published_at).toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    })
-  : null;
+const publishedDate = formatPostDate(post.published_at);
 const publishedDateTime = post.published_at ? post.published_at.slice(0, 10) : null;
 
 const { html, toc } = enhanceContent(post.html);
@@ -30,14 +24,7 @@ const showToc = toc.length >= 3;
 const featureSrcset = buildGhostSrcset(post.feature_image);
 const transitionName = getPostTransitionName(post);
 
-const formatNavDate = (navPost: GhostPost) =>
-  navPost.published_at
-    ? new Date(navPost.published_at).toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      })
-    : null;
+const formatNavDate = (navPost: GhostPost) => formatPostDate(navPost.published_at);
 ---
 
 <div id='scroll-progress' aria-hidden='true'></div>

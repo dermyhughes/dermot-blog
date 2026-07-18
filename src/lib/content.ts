@@ -23,6 +23,19 @@ export const getTagPagePath = (tagSlug: string, pageNumber: number) =>
 export const getPublicTags = (tags: GhostTag[] = []) =>
   tags.filter((tag) => tag.visibility !== 'internal');
 
+/* Display date for post metadata, e.g. "04 Jul 2026" */
+export const formatPostDate = (date: string | null | undefined) =>
+  date
+    ? new Date(date).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })
+    : null;
+
+/* Zero-padded counter for the recurring spec-sheet motif, e.g. "007" */
+export const padIndex = (value: number, width = 3) => String(value).padStart(width, '0');
+
 export const formatReadingTime = (post: GhostPost) => {
   if (typeof post.reading_time === 'number' && post.reading_time > 0) {
     return `${post.reading_time} min read`;
@@ -45,6 +58,45 @@ export const paginateItems = <T>(items: T[], pageSize: number, pageNumber: numbe
     items: paginatedItems,
     pageNumber: safePageNumber,
     numberOfPages,
+    startIndex,
+  };
+};
+
+/* The home page's first page opens with a full-width "feature" card
+   (the newest post) above a 2-column grid of the rest. POSTS_PER_PAGE
+   is even, so a same-sized first page leaves the feature card's
+   sibling count odd — one card dangling alone in the last grid row on
+   desktop. Trimming the first page by one card keeps that remainder
+   even; the displaced post simply becomes the first card on page 2,
+   where every page (no feature card there) is a plain, even-count
+   grid. Only the home listing uses this — tag archives have no
+   feature card, so their pages don't have this parity problem. */
+export const HOME_FEATURED_PAGE_SIZE = POSTS_PER_PAGE - 1;
+
+export const paginateHomeItems = <T>(items: T[], pageNumber: number) => {
+  const total = items.length;
+  const numberOfPages =
+    total <= HOME_FEATURED_PAGE_SIZE
+      ? 1
+      : 1 + Math.ceil((total - HOME_FEATURED_PAGE_SIZE) / POSTS_PER_PAGE);
+  const safePageNumber = Math.min(Math.max(pageNumber, 1), numberOfPages);
+
+  if (safePageNumber === 1) {
+    return {
+      items: items.slice(0, HOME_FEATURED_PAGE_SIZE),
+      pageNumber: 1,
+      numberOfPages,
+      startIndex: 0,
+    };
+  }
+
+  const startIndex = HOME_FEATURED_PAGE_SIZE + (safePageNumber - 2) * POSTS_PER_PAGE;
+
+  return {
+    items: items.slice(startIndex, startIndex + POSTS_PER_PAGE),
+    pageNumber: safePageNumber,
+    numberOfPages,
+    startIndex,
   };
 };
 

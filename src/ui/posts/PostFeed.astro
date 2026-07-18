@@ -1,4 +1,6 @@
 ---
+import { padIndex } from '../../lib/content';
+
 interface Props {
   label?: string | null;
   count?: number | null;
@@ -12,7 +14,7 @@ const { label = null, count = null } = Astro.props;
     <header class='post-feed-head'>
       <p class='spec-label'>
         [ {label}
-        {count !== null && <b>{` / ${String(count).padStart(3, '0')} entries`}</b>} ]
+        {count !== null && <b>{` / ${padIndex(count)} entries`}</b>} ]
       </p>
       <span class='post-feed-rule' aria-hidden='true' />
     </header>

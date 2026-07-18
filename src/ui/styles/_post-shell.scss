@@ -1,3 +1,5 @@
+@use './mixins' as mix;
+
 @mixin post-shell-contract {
   #scroll-progress {
     position: fixed;
@@ -236,23 +238,8 @@
     flex-direction: column;
     gap: var(--space-2xs);
     padding: var(--space-md);
-    color: inherit;
-    text-decoration: none;
-    background: color-mix(in srgb, var(--color-surface-raised) 88%, transparent);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-lg);
-    transition:
-      transform var(--transition-medium),
-      border-color var(--transition-medium),
-      box-shadow var(--transition-medium);
 
-    &:hover {
-      color: inherit;
-      text-decoration: none;
-      transform: translateY(-0.3rem);
-      border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border-subtle));
-      box-shadow: var(--shadow-md), var(--glow-pink);
-    }
+    @include mix.raised-card(-0.3rem);
 
     &--newer {
       align-items: flex-end;
@@ -302,13 +289,8 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .post-toc-link,
-    .post-nav-link {
+    .post-toc-link {
       transition: none;
-    }
-
-    .post-nav-link:hover {
-      transform: none;
     }
   }
 }

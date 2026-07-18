@@ -71,13 +71,6 @@
   --display-md: clamp(2.4rem, 2rem + 1.2vw, 3.4rem);
   --display-sm: clamp(2rem, 1.8rem + 0.6vw, 2.4rem);
 
-  --heading-1: var(--display-lg);
-  --heading-2: var(--display-md);
-  --heading-3: var(--display-sm);
-  --heading-4: 2rem;
-  --heading-5: var(--display-sm);
-  --heading-6: 1.8rem;
-
   --leading-none: 1;
   --leading-tight: 1.08;
   --leading-snug: 1.3;
@@ -273,26 +266,4 @@
 
 :root[data-theme='light'] {
   @include theme-light;
-}
-
-/* Legacy aliases — keep older components compiling against the
-/* new system; prefer the canonical names above in new code.
-/* ---------------------------------------------------------- */
-:root {
-  --color-primary: var(--color-accent);
-  --color-secondary: var(--color-text-secondary);
-  --color-pink: var(--color-accent);
-  --color-green: var(--color-mint-500);
-
-  --font-sans-serif: var(--font-family-sans);
-  --font-serif: var(--font-family-serif);
-  --font-mono: var(--font-family-mono);
-  --font-light: var(--font-weight-light);
-  --font-normal: var(--font-weight-normal);
-  --font-bold: var(--font-weight-bold);
-  --font-heavy: var(--font-weight-black);
-
-  --height: var(--header-height);
-  --margin: var(--space-lg);
-  --radius: var(--radius-md);
 }

@@ -1,5 +1,6 @@
 ---
 import type { GhostNavigationItem } from '../../lib/ghost-types';
+import { padIndex } from '../../lib/content';
 import { siteUrl } from '../../lib/site';
 
 interface Props {
@@ -36,7 +37,7 @@ const getInternalPath = (rawUrl: string) => {
   return ensureTrailingSlash(rawUrl.startsWith('/') ? rawUrl : `/${rawUrl}`);
 };
 
-const formatIndex = (index: number) => String(index + 1).padStart(2, '0');
+const formatIndex = (index: number) => padIndex(index + 1, 2);
 
 const normalizedCurrentPath = ensureTrailingSlash(currentPath);
 ---

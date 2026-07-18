@@ -79,19 +79,23 @@ All URLs use trailing slashes (enforced in `astro.config.mjs`).
 
 ```
 src/
-├── pages/          # Astro routing (thin, delegate to ui/ components)
-├── components/     # Legacy shims only — re-export from ui/ for backwards compat; do not add new components here
+├── pages/          # Astro routing (thin, delegate to ui/ components; import via @/ alias)
 ├── ui/             # All UI lives here — add new components in the appropriate subdirectory
 │   ├── foundations/   # Design tokens (tokens.scss), reset, base typography, Koenig editor styles
-│   ├── layout/        # SiteHeader, SiteFooter, SiteBanner, TagHeader, ArticleContent
+│   ├── styles/        # Shared SCSS partials: cross-component mixins + style contracts included by components
+│   ├── icons/         # Icon component with the inline-SVG registry
+│   ├── layout/        # Layout, SiteHeader, SiteFooter, SiteBanner, TagHeader, ArticleContent, PostArticle
+│   ├── meta/          # MetaData (head tags, OpenGraph/Twitter, JSON-LD)
 │   ├── navigation/    # Navigation (Astro), ThemeToggle (React), SocialLinks
-│   ├── posts/         # PostFeed, PostCard, PostArticle
+│   ├── posts/         # PostFeed, PostCard
 │   └── pagination/    # Pagination component
 ├── lib/            # Business logic, Ghost API, types
 └── utils/          # Theme management, site config helpers
 ```
 
-Pages are thin — they call Ghost API functions and pass data down to `ui/` components.
+Pages are thin — they call Ghost API functions and pass data down to `ui/` components. Components are imported directly by file path (no barrel); pages use the `@/` alias.
+
+Shared visual patterns live in `src/ui/styles/_mixins.scss` (`raised-card` for the lifting card surface, `chromatic-ghosts` for the pink/cyan text-ghost effect) — extend those rather than re-implementing the pattern in a component. Shared formatting helpers (`formatPostDate`, `padIndex`) live in `src/lib/content.ts`. Inline SVGs are registered once in `src/ui/icons/Icon.astro`.
 
 Only `ThemeToggle` uses React (`client:load`). Everything else is Astro or plain HTML/SCSS.
 
