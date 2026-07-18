@@ -4,15 +4,15 @@ import MetaData from '@/ui/meta/MetaData.astro';
 import Pagination from '@/ui/pagination/Pagination.astro';
 import PostCard from '@/ui/posts/PostCard.astro';
 import PostFeed from '@/ui/posts/PostFeed.astro';
-import { buildPaginationContext, getHomePagePath, paginateItems, POSTS_PER_PAGE } from '@/lib/content';
+import { buildPaginationContext, getHomePagePath, paginateHomeItems } from '@/lib/content';
 import { getAllPosts, getGhostSettings } from '@/lib/ghost';
 import { canonicalFromPath } from '@/lib/site';
 
 export async function getStaticPaths() {
   const posts = await getAllPosts();
-  const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+  const { numberOfPages } = paginateHomeItems(posts, 1);
 
-  return Array.from({ length: Math.max(totalPages - 1, 0) }, (_, index) => ({
+  return Array.from({ length: Math.max(numberOfPages - 1, 0) }, (_, index) => ({
     params: { page: String(index + 2) },
   }));
 }
@@ -21,7 +21,11 @@ const pageNumber = Number(Astro.params.page);
 const settings = await getGhostSettings();
 const posts = await getAllPosts();
 
-const { items: paginatedPosts, numberOfPages } = paginateItems(posts, POSTS_PER_PAGE, pageNumber);
+const {
+  items: paginatedPosts,
+  numberOfPages,
+  startIndex,
+} = paginateHomeItems(posts, pageNumber);
 const pagination = buildPaginationContext(pageNumber, numberOfPages, getHomePagePath);
 const currentPath = getHomePagePath(pageNumber);
 const canonical = canonicalFromPath(currentPath);
@@ -36,7 +40,7 @@ const canonical = canonicalFromPath(currentPath);
     <PostFeed label={`index — page ${pageNumber}`} count={posts.length}>
       {
         paginatedPosts.map((post, index) => (
-          <PostCard post={post} index={(pageNumber - 1) * POSTS_PER_PAGE + index + 1} />
+          <PostCard post={post} index={startIndex + index + 1} />
         ))
       }
     </PostFeed>
