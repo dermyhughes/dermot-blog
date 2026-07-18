@@ -1,4 +1,6 @@
 ---
+import { padIndex } from '../../lib/content';
+
 interface Props {
   title: string;
   description?: string | null;
@@ -10,7 +12,7 @@ const { title, description = null, count = null } = Astro.props;
 
 <header class='tag-header'>
   <p class='spec-label'>
-    [ tag archive {count !== null && <b>/ {String(count).padStart(3, '0')} entries</b>} ]
+    [ tag archive {count !== null && <b>/ {padIndex(count)} entries</b>} ]
   </p>
   <h1 class='tag-header-title'>{title}</h1>
   {description ? <p class='tag-header-desc'>{description}</p> : null}

@@ -1,4 +1,6 @@
 ---
+import { padIndex } from '../../lib/content';
+
 interface Props {
   previousPagePath?: string;
   nextPagePath?: string;
@@ -7,8 +9,6 @@ interface Props {
 }
 
 const { previousPagePath, nextPagePath, humanPageNumber, numberOfPages } = Astro.props;
-
-const pad = (value: number) => String(value).padStart(2, '0');
 ---
 
 <nav class='pagination' aria-label='Pagination'>
@@ -24,7 +24,7 @@ const pad = (value: number) => String(value).padStart(2, '0');
   {
     numberOfPages > 1 && (
       <div class='pagination-location'>
-        page <b>{pad(humanPageNumber)}</b> <span aria-hidden='true'>/</span> {pad(numberOfPages)}
+        page <b>{padIndex(humanPageNumber, 2)}</b> <span aria-hidden='true'>/</span> {padIndex(numberOfPages, 2)}
       </div>
     )
   }

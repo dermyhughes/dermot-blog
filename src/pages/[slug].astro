@@ -1,17 +1,17 @@
 ---
-import Layout from '../components/Layout.astro';
-import MetaData from '../components/meta/MetaData.astro';
-import Pagination from '../components/Pagination.astro';
-import PostCard from '../components/PostCard.astro';
-import ArticleContent from '../ui/layout/ArticleContent.astro';
-import PostFeed from '../ui/posts/PostFeed.astro';
-import TagHeader from '../ui/layout/TagHeader.astro';
+import Layout from '@/ui/layout/Layout.astro';
+import MetaData from '@/ui/meta/MetaData.astro';
+import Pagination from '@/ui/pagination/Pagination.astro';
+import PostCard from '@/ui/posts/PostCard.astro';
+import ArticleContent from '@/ui/layout/ArticleContent.astro';
+import PostFeed from '@/ui/posts/PostFeed.astro';
+import TagHeader from '@/ui/layout/TagHeader.astro';
 import {
   buildPaginationContext,
   getTagPagePath,
   paginateItems,
   POSTS_PER_PAGE,
-} from '../lib/content';
+} from '@/lib/content';
 import {
   assertNoPageTagCollisions,
   getAllPages,
@@ -20,9 +20,9 @@ import {
   getPageBySlug,
   getPostsByTagSlug,
   getTagBySlug,
-} from '../lib/ghost';
-import type { GhostPage, GhostPost, GhostTag } from '../lib/ghost-types';
-import { canonicalFromPath } from '../lib/site';
+} from '@/lib/ghost';
+import type { GhostPage, GhostPost, GhostTag } from '@/lib/ghost-types';
+import { canonicalFromPath } from '@/lib/site';
 
 interface RouteProps {
   kind: 'page' | 'tag';

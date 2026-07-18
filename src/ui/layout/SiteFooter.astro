@@ -1,4 +1,5 @@
 ---
+import Icon from '../icons/Icon.astro';
 import Navigation from '../navigation/Navigation.astro';
 import SocialLinks from '../navigation/SocialLinks.astro';
 import type { GhostSettings } from '../../lib/ghost-types';
@@ -36,11 +37,7 @@ const { settings, currentPath, currentYear } = Astro.props;
         <div class='site-foot-social'>
           <SocialLinks label='Footer social links' />
           <a class='site-foot-rss' href='/rss/' aria-label='RSS feed' title='RSS feed'>
-            <svg viewBox='0 0 16 16' fill='currentColor' aria-hidden='true' focusable='false'>
-              <path
-                d='M2 13a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm-1-5.5c4.14 0 7.5 3.36 7.5 7.5h-2.1A5.4 5.4 0 0 0 1 9.6V7.5zm0-4.5C7.08 3 12 7.92 12 14h-2.1C9.9 9.08 5.92 5.1 1 5.1V3z'
-              />
-            </svg>
+            <Icon name='rss' class='site-foot-rss-icon' />
           </a>
         </div>
       </div>
@@ -158,15 +155,17 @@ const { settings, currentPath, currentYear } = Astro.props;
       color var(--transition-fast),
       filter var(--transition-fast);
 
-    svg {
-      width: 1.7rem;
-      height: 1.7rem;
-    }
-
     &:hover {
       color: var(--color-accent-text);
       filter: drop-shadow(0 0 8px var(--color-accent));
     }
+  }
+
+  /* The icon svg renders inside the Icon component, outside this
+     component's scope — reach it through the scoped parent */
+  .site-foot-rss :global(.site-foot-rss-icon) {
+    width: 1.7rem;
+    height: 1.7rem;
   }
 
   .site-foot-bottom {

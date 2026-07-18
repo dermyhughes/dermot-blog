@@ -23,6 +23,19 @@ export const getTagPagePath = (tagSlug: string, pageNumber: number) =>
 export const getPublicTags = (tags: GhostTag[] = []) =>
   tags.filter((tag) => tag.visibility !== 'internal');
 
+/* Display date for post metadata, e.g. "04 Jul 2026" */
+export const formatPostDate = (date: string | null | undefined) =>
+  date
+    ? new Date(date).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })
+    : null;
+
+/* Zero-padded counter for the recurring spec-sheet motif, e.g. "007" */
+export const padIndex = (value: number, width = 3) => String(value).padStart(width, '0');
+
 export const formatReadingTime = (post: GhostPost) => {
   if (typeof post.reading_time === 'number' && post.reading_time > 0) {
     return `${post.reading_time} min read`;

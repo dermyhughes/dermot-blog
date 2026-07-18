@@ -1,0 +1,19 @@
+---
+import { iconPaths } from './registry';
+import type { IconName } from './registry';
+
+/* Icons are decorative by default (aria-hidden) — the accessible
+   name belongs on the interactive parent (aria-label on the link
+   or button). */
+
+interface Props {
+  name: IconName;
+  class?: string;
+}
+
+const { name, class: className } = Astro.props;
+---
+
+<svg class={className} viewBox='0 0 16 16' fill='currentColor' aria-hidden='true' focusable='false'>
+  <path d={iconPaths[name]} />
+</svg>

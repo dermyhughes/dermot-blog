@@ -1,12 +1,12 @@
 ---
-import Layout from '../../components/Layout.astro';
-import MetaData from '../../components/meta/MetaData.astro';
-import Pagination from '../../components/Pagination.astro';
-import PostCard from '../../components/PostCard.astro';
-import PostFeed from '../../ui/posts/PostFeed.astro';
-import { buildPaginationContext, getHomePagePath, paginateItems, POSTS_PER_PAGE } from '../../lib/content';
-import { getAllPosts, getGhostSettings } from '../../lib/ghost';
-import { canonicalFromPath } from '../../lib/site';
+import Layout from '@/ui/layout/Layout.astro';
+import MetaData from '@/ui/meta/MetaData.astro';
+import Pagination from '@/ui/pagination/Pagination.astro';
+import PostCard from '@/ui/posts/PostCard.astro';
+import PostFeed from '@/ui/posts/PostFeed.astro';
+import { buildPaginationContext, getHomePagePath, paginateItems, POSTS_PER_PAGE } from '@/lib/content';
+import { getAllPosts, getGhostSettings } from '@/lib/ghost';
+import { canonicalFromPath } from '@/lib/site';
 
 export async function getStaticPaths() {
   const posts = await getAllPosts();

@@ -1,6 +1,6 @@
 ---
 import type { GhostPost } from '../../lib/ghost-types';
-import { formatReadingTime, getPostPath, getPublicTags } from '../../lib/content';
+import { formatPostDate, formatReadingTime, getPostPath, getPublicTags, padIndex } from '../../lib/content';
 import getPostTransitionName from '../../lib/transitions';
 import { buildGhostSrcset } from '../../lib/images';
 
@@ -17,14 +17,8 @@ const publicTags = getPublicTags(post.tags);
 const primaryTag = publicTags[0] || null;
 const excerpt = post.excerpt || post.custom_excerpt || '';
 const readingTime = formatReadingTime(post);
-const indexLabel = String(index).padStart(3, '0');
-const publishedDate = post.published_at
-  ? new Date(post.published_at).toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    })
-  : null;
+const indexLabel = padIndex(index);
+const publishedDate = formatPostDate(post.published_at);
 
 const isFeature = variant === 'feature';
 const imageSrcset = buildGhostSrcset(post.feature_image);
@@ -85,28 +79,15 @@ const transitionName = getPostTransitionName(post);
 </a>
 
 <style lang='scss'>
+  @use '../styles/mixins' as mix;
+
   .post-card {
     position: relative;
     display: flex;
     flex-direction: column;
     padding: var(--space-sm);
-    color: inherit;
-    background: color-mix(in srgb, var(--color-surface-raised) 88%, transparent);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-lg);
-    text-decoration: none;
-    transition:
-      transform var(--transition-medium),
-      border-color var(--transition-medium),
-      box-shadow var(--transition-medium);
 
-    &:hover {
-      color: inherit;
-      text-decoration: none;
-      transform: translateY(-0.4rem);
-      border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border-subtle));
-      box-shadow: var(--shadow-md), var(--glow-pink);
-    }
+    @include mix.raised-card;
   }
 
   /* Crop-mark corners — appear on hover, spec-sheet style */
@@ -364,15 +345,10 @@ const transitionName = getPostTransitionName(post);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .post-card,
     .post-card-image,
     .post-card-cta-arrow,
     .post-card-corner {
       transition: none;
-    }
-
-    .post-card:hover {
-      transform: none;
     }
 
     .post-card:hover .post-card-image {

@@ -1,10 +1,10 @@
 ---
-import Layout from '../../components/Layout.astro';
-import MetaData from '../../components/meta/MetaData.astro';
-import PostArticle from '../../ui/layout/PostArticle.astro';
-import { getPostTagSlug } from '../../lib/content';
-import { getAllPosts, getGhostSettings } from '../../lib/ghost';
-import { canonicalFromPath } from '../../lib/site';
+import Layout from '@/ui/layout/Layout.astro';
+import MetaData from '@/ui/meta/MetaData.astro';
+import PostArticle from '@/ui/layout/PostArticle.astro';
+import { getPostTagSlug } from '@/lib/content';
+import { getAllPosts, getGhostSettings } from '@/lib/ghost';
+import { canonicalFromPath } from '@/lib/site';
 
 export async function getStaticPaths() {
   const posts = await getAllPosts();
