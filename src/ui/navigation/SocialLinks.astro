@@ -62,7 +62,7 @@ const socialLinks: Array<{ href: string; icon: IconName; alt: string }> = [
 
     &:hover {
       color: var(--color-accent-text);
-      filter: drop-shadow(0 0 8px var(--color-accent));
+      filter: var(--hover-glow-filter);
       transform: translateY(-2px);
     }
   }
@@ -89,7 +89,7 @@ const socialLinks: Array<{ href: string; icon: IconName; alt: string }> = [
       &:hover {
         color: var(--color-accent-text);
         border-color: var(--color-accent);
-        box-shadow: var(--glow-pink);
+        box-shadow: var(--hover-glow);
         filter: none;
       }
     }

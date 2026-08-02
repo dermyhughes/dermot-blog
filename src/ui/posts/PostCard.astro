@@ -146,7 +146,7 @@ const transitionName = getPostTransitionName(post);
 
   .post-card:hover .post-card-image {
     transform: scale(1.05);
-    filter: saturate(1.25);
+    filter: saturate(1.08);
   }
 
   .post-card-placeholder {
@@ -166,6 +166,7 @@ const transitionName = getPostTransitionName(post);
     font-weight: var(--font-weight-bold);
     color: var(--color-text-muted);
     opacity: 0.55;
+    mix-blend-mode: var(--registration-blend);
     text-shadow:
       -0.04em 0.015em 1px var(--color-accent),
       0.04em -0.015em 1px var(--color-accent-2);
@@ -235,8 +236,8 @@ const transitionName = getPostTransitionName(post);
   /* Chromatic fringe on hover */
   .post-card:hover .post-card-title {
     text-shadow:
-      -2px 0 0 color-mix(in srgb, var(--color-accent) 55%, transparent),
-      2px 0 0 color-mix(in srgb, var(--color-accent-2) 45%, transparent);
+      -2px 0 0 color-mix(in srgb, var(--color-accent-text) 55%, transparent),
+      2px 0 0 color-mix(in srgb, var(--color-accent-2-text) 45%, transparent);
   }
 
   .post-card-excerpt {

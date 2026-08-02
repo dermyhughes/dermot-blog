@@ -46,6 +46,7 @@ const { settings, currentPath, isHome = false } = Astro.props;
     z-index: var(--z-nav);
     background: var(--glass-bg);
     border-bottom: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-sm);
     backdrop-filter: blur(var(--blur-glass)) saturate(1.5);
     -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(1.5);
     /* Own transition group — the chrome stays put while page content
@@ -69,6 +70,7 @@ const { settings, currentPath, isHome = false } = Astro.props;
     from {
       background: transparent;
       border-bottom-color: transparent;
+      box-shadow: 0 0 0 0 transparent;
       backdrop-filter: blur(0) saturate(1);
       -webkit-backdrop-filter: blur(0) saturate(1);
     }
@@ -76,6 +78,7 @@ const { settings, currentPath, isHome = false } = Astro.props;
     to {
       background: var(--glass-bg);
       border-bottom-color: var(--glass-border);
+      box-shadow: var(--shadow-sm);
       backdrop-filter: blur(var(--blur-glass)) saturate(1.5);
       -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(1.5);
     }
