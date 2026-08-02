@@ -64,7 +64,7 @@
       font-weight: var(--font-weight-semibold);
     }
 
-    /* Ghost convention — h5 renders as a pull quote */
+    /* h5 is reserved for pull quotes, not a heading level */
     h5 {
       display: block;
       margin: var(--space-lg) 0;

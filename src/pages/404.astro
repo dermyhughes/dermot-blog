@@ -2,10 +2,10 @@
 import Layout from '@/ui/layout/Layout.astro';
 import MetaData from '@/ui/meta/MetaData.astro';
 import CatImage from '@/ui/layout/CatImage';
-import { getGhostSettings } from '@/lib/ghost';
+import { getSiteSettings } from '@/lib/content-data';
 import { canonicalFromPath } from '@/lib/site';
 
-const settings = await getGhostSettings();
+const settings = getSiteSettings();
 const canonical = canonicalFromPath('/404/');
 ---
 

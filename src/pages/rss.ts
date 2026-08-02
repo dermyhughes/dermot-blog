@@ -1,12 +1,9 @@
 import { load } from 'cheerio';
-import ghostHelpers from '@tryghost/helpers';
-import type { GhostPost, GhostTag } from '../lib/ghost-types';
 import { getPostTagSlug } from '../lib/content';
-import { getAllPosts, getGhostSettings } from '../lib/ghost';
+import { getAllPosts, getSiteSettings } from '../lib/content-data';
+import type { BlogPost } from '../lib/content-types';
 import { siteUrl, withSiteUrl } from '../lib/site';
 import siteConfig from '../utils/siteConfig';
-
-const tagsHelper = ghostHelpers.tags;
 
 export const prerender = true;
 
@@ -20,14 +17,9 @@ const escapeXml = (value: string) =>
 
 const cdata = (value: string) => `<![CDATA[${value.replace(/]]>/g, ']]]]><![CDATA[>')}]]>`;
 
-const getPublicTagNames = (post: GhostPost) => {
-  const tags = tagsHelper(post, { visibility: 'public', fn: (tag: GhostTag) => tag }) as GhostTag[];
-  return tags.map((tag) => tag.name);
-};
-
-const generateItem = (post: GhostPost) => {
+const generateItem = (post: BlogPost) => {
   const fallbackPath = `/${getPostTagSlug(post)}/${post.slug}/`;
-  const itemUrl = post.canonical_url || withSiteUrl(fallbackPath) || '';
+  const itemUrl = post.canonicalUrl || withSiteUrl(fallbackPath) || '';
   const html = post.html || '';
   const htmlContent = load(html, {
     decodeEntities: false,
@@ -36,32 +28,35 @@ const generateItem = (post: GhostPost) => {
 
   const customElements: string[] = [];
 
-  if (post.feature_image) {
-    customElements.push(`<media:content url="${escapeXml(post.feature_image)}" medium="image" />`);
+  if (post.featureImage) {
+    const imageUrl = withSiteUrl(`/images/posts/${post.featureImage}`) || '';
+    customElements.push(`<media:content url="${escapeXml(imageUrl)}" medium="image" />`);
 
-    htmlContent('p').first().before(`<img src="${post.feature_image}" />`);
+    htmlContent('p').first().before(`<img src="${imageUrl}" />`);
     htmlContent('img').attr('alt', post.title);
   }
 
   customElements.push(`<content:encoded>${cdata(htmlContent.html() || '')}</content:encoded>`);
 
-  const categories = getPublicTagNames(post)
+  const categoryLabels = post.primaryTagLabel ? [post.primaryTagLabel] : post.tags;
+  const categories = categoryLabels
     .map((category) => `<category>${escapeXml(category)}</category>`)
     .join('');
 
   return `<item>
   <title>${escapeXml(post.title)}</title>
   <description>${escapeXml(post.excerpt || '')}</description>
-  <guid isPermaLink="false">${escapeXml(post.id)}</guid>
+  <guid isPermaLink="false">${escapeXml(post.slug)}</guid>
   <link>${escapeXml(itemUrl)}</link>
-  <pubDate>${post.published_at ? new Date(post.published_at).toUTCString() : ''}</pubDate>
+  <pubDate>${new Date(post.publishedAt).toUTCString()}</pubDate>
   ${categories}
   ${customElements.join('')}
 </item>`;
 };
 
 export async function GET() {
-  const [settings, posts] = await Promise.all([getGhostSettings(), getAllPosts()]);
+  const posts = await getAllPosts();
+  const settings = getSiteSettings();
 
   const siteTitle = settings.title || 'No Title';
   const siteDescription = settings.description || 'No Description';
@@ -72,7 +67,7 @@ export async function GET() {
 <channel>
   <title>${escapeXml(siteTitle)}</title>
   <description>${escapeXml(siteDescription)}</description>
-  <generator>Ghost 2.9</generator>
+  <generator>astro</generator>
   <link>${escapeXml(`${siteUrl}/`)}</link>
   <atom:link href="${escapeXml(
     `${siteUrl}/rss/`,

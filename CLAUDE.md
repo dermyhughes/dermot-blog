@@ -5,28 +5,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Stack
 
 - **Astro 5** (static site generation) with **React 18** for interactive components
-- **Ghost** as headless CMS via Content API v5.0
+- Content lives in local Markdown files via **Astro Content Collections** — no external CMS
 - **TypeScript** (strict mode) with path alias `@/*` → `src/*`
 - **SCSS** with CSS variables for theming; no CSS-in-JS
 
 ## Environment Variables
 
-Required before running dev or build:
-
 ```
-GHOST_API_URL=https://blog.dermothughes.com
-GHOST_CONTENT_API_KEY=<key>
 SITEURL=https://dermothughes.com          # optional, used for canonical URLs
-GHOST_ALLOW_OFFLINE_FALLBACK=true         # optional, allows build when Ghost unreachable (dev mode enables this automatically)
-```
-
-Alternatively, create a `.ghost.json` (or `.ghost`) file in the project root with `development` / `production` keys — `ghost.ts` reads this as a fallback to env vars:
-
-```json
-{
-  "development": { "apiUrl": "...", "contentApiKey": "..." },
-  "production":  { "apiUrl": "...", "contentApiKey": "..." }
-}
 ```
 
 ## Commands
@@ -50,28 +36,30 @@ Visual tests run against `http://127.0.0.1:4173`. Run `npm run preview` in a sep
 
 ### Routing
 
-File-based Astro routing maps to Ghost content:
+File-based Astro routing maps to local content:
 
 | Route | File | Content |
 |---|---|---|
 | `/` and `/page/:n/` | `pages/index.astro`, `pages/page/[page].astro` | Paginated posts |
 | `/:tag/:slug/` | `pages/[tag]/[slug].astro` | Individual posts |
-| `/:slug/` | `pages/[slug].astro` | Ghost pages **or** tag archives |
+| `/:slug/` | `pages/[slug].astro` | Pages **or** tag archives |
 | `/:slug/page/:n/` | `pages/[slug]/page/[page].astro` | Paginated tag archives |
 
-`pages/[slug].astro` detects at build time whether a slug belongs to a Ghost page or a tag. Build fails if a Ghost page slug collides with a Ghost tag slug.
+`pages/[slug].astro` detects at build time whether a slug belongs to a page or a tag, from two separate content collections — a collision would surface as a duplicate static-route build error.
 
 All URLs use trailing slashes (enforced in `astro.config.mjs`).
 
 ### Data Layer
 
-`src/lib/ghost.ts` — Ghost API client. All API calls are cached at module level using promises, so each data type is fetched once per build. Dev mode allows builds to proceed when Ghost is unreachable (returns empty arrays).
+`content/posts/*.md` and `content/pages/*.md` — Markdown source, frontmatter + pre-rendered HTML body, defined by the collections in `src/content.config.ts`.
+
+`src/lib/content-data.ts` — Reads the content collections. All post/page reads are re-derived per call (Astro caches collection reads internally), sorted newest-first. `getAllTags()`/`getTagBySlug()` read from the static `src/lib/tags.ts` list rather than a collection.
 
 `src/lib/content.ts` — Pagination helpers, post path builders, reading time calculator.
 
-`src/lib/enhance-content.ts` — Build-time enrichment of Ghost HTML (cheerio): heading ids + anchor links + TOC extraction, lazy/responsive images, hardened external links, code blocks wrapped in copyable "code frames". Applied in `PostArticle` (posts, with TOC) and `ArticleContent` (Ghost pages).
+`src/lib/enhance-content.ts` — Build-time enrichment of post/page HTML (cheerio): heading ids + anchor links + TOC extraction, hardened external links, code blocks wrapped in copyable "code frames". Applied in `PostArticle` (posts, with TOC) and `ArticleContent` (pages).
 
-`src/lib/images.ts` — Ghost image-resizing srcset builder (`/content/images/size/wNNN/` URLs).
+`src/lib/post-images.ts` — Resolves a feature-image filename to its `src/assets/posts/` module via `import.meta.glob`, for Astro's `<Image>` component (WebP, responsive `srcset`). Inline body images referenced in post HTML live in `public/images/posts/` instead — `set:html` content can't use `<Image>`, so those render at original resolution.
 
 `src/lib/site.ts` — Canonical URL construction from `SITEURL`.
 
@@ -89,11 +77,11 @@ src/
 │   ├── navigation/    # Navigation (Astro), ThemeToggle (React), SocialLinks
 │   ├── posts/         # PostFeed, PostCard
 │   └── pagination/    # Pagination component
-├── lib/            # Business logic, Ghost API, types
+├── lib/            # Business logic, content data layer, types
 └── utils/          # Theme management, site config helpers
 ```
 
-Pages are thin — they call Ghost API functions and pass data down to `ui/` components. Components are imported directly by file path (no barrel); pages use the `@/` alias.
+Pages are thin — they call content-data functions and pass data down to `ui/` components. Components are imported directly by file path (no barrel); pages use the `@/` alias.
 
 Shared visual patterns live in `src/ui/styles/_mixins.scss` (`raised-card` for the lifting card surface, `chromatic-ghosts` for the pink/cyan text-ghost effect) — extend those rather than re-implementing the pattern in a component. Shared formatting helpers (`formatPostDate`, `padIndex`) live in `src/lib/content.ts`. Inline SVGs are registered once in `src/ui/icons/Icon.astro`.
 
@@ -114,7 +102,7 @@ Theme (light/dark) is stored in `localStorage` under the key `preferred-theme` a
 
 ### Deployment
 
-Netlify builds with `NODE_ENV=production npm run build`, publishing `dist/`. Ghost webhooks trigger Netlify rebuilds on content changes.
+Netlify builds with `NODE_ENV=production npm run build`, publishing `dist/`. Rebuilds trigger on git push — new posts are added as Markdown files in `content/posts/`.
 
 ## Agent skills
 

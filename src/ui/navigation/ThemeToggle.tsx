@@ -51,7 +51,6 @@ const ThemeToggle = React.memo(() => {
     <button
       type='button'
       className={styles.button}
-      data-mode={theme}
       onClick={handleToggle}
       aria-label={label}
       title={label}

@@ -13,15 +13,14 @@ import {
   POSTS_PER_PAGE,
 } from '@/lib/content';
 import {
-  assertNoPageTagCollisions,
   getAllPages,
   getAllTags,
-  getGhostSettings,
+  getSiteSettings,
   getPageBySlug,
   getPostsByTagSlug,
   getTagBySlug,
-} from '@/lib/ghost';
-import type { GhostPage, GhostPost, GhostTag } from '@/lib/ghost-types';
+} from '@/lib/content-data';
+import type { BlogPage, BlogPost, BlogTag } from '@/lib/content-types';
 import { canonicalFromPath } from '@/lib/site';
 
 interface RouteProps {
@@ -29,9 +28,8 @@ interface RouteProps {
 }
 
 export async function getStaticPaths() {
-  await assertNoPageTagCollisions();
-
-  const [pages, tags] = await Promise.all([getAllPages(), getAllTags()]);
+  const pages = await getAllPages();
+  const tags = await getAllTags();
 
   return [
     ...pages.map((page) => ({
@@ -48,13 +46,13 @@ export async function getStaticPaths() {
 const { slug } = Astro.params;
 const { kind } = Astro.props as RouteProps;
 
-const settings = await getGhostSettings();
+const settings = getSiteSettings();
 const currentPath = `/${slug}/`;
 const canonical = canonicalFromPath(currentPath);
 
-let page: GhostPage | null = null;
-let tag: GhostTag | null = null;
-let paginatedPosts: GhostPost[] = [];
+let page: BlogPage | null = null;
+let tag: BlogTag | null = null;
+let paginatedPosts: BlogPost[] = [];
 let numberOfPages = 1;
 let totalTagPosts = 0;
 
@@ -62,13 +60,13 @@ if (kind === 'page') {
   page = await getPageBySlug(slug || '');
 
   if (!page) {
-    throw new Error(`Unable to find Ghost page for route ${currentPath}`);
+    throw new Error(`Unable to find page for route ${currentPath}`);
   }
 } else {
   tag = await getTagBySlug(slug || '');
 
   if (!tag) {
-    throw new Error(`Unable to find Ghost tag for route ${currentPath}`);
+    throw new Error(`Unable to find tag for route ${currentPath}`);
   }
 
   const allTagPosts = await getPostsByTagSlug(slug || '');
@@ -83,13 +81,7 @@ const pagination = buildPaginationContext(1, numberOfPages, (pageNumber) =>
 );
 ---
 
-<Layout
-  settings={settings}
-  currentPath={currentPath}
-  extraStyles={page?.codeinjection_styles}
-  extraHeadHtml={page?.codeinjection_head}
-  extraFootHtml={page?.codeinjection_foot}
->
+<Layout settings={settings} currentPath={currentPath}>
   <Fragment slot='head'>
     {
       page ? (

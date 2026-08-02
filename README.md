@@ -1,6 +1,6 @@
 # Dermot Hughes Blog and Portfolio
 
-Astro static site using Ghost as a headless CMS via the Ghost Content API.
+Astro static site. Content lives in local Markdown files via Astro Content Collections — no external CMS.
 
 ## Requirements
 
@@ -11,8 +11,6 @@ Astro static site using Ghost as a headless CMS via the Ghost Content API.
 
 Set these before running dev/build:
 
-- `GHOST_API_URL` (example: `https://blog.dermothughes.com`)
-- `GHOST_CONTENT_API_KEY`
 - `SITEURL` (optional override for canonical URLs; defaults to `https://dermothughes.com`)
 
 ## Scripts
@@ -34,7 +32,7 @@ Set these before running dev/build:
 - Tags: `/:tagSlug/` and `/:tagSlug/page/:n/`
 - RSS: `/rss`
 
-Build fails if a Ghost page slug collides with a Ghost tag slug.
+Pages and tags are separate content collections; a colliding slug would surface as a duplicate static-route build error.
 
 ## CV Removal Redirects
 
@@ -52,4 +50,4 @@ The previous CV flow has been retired:
 - Publish directory: `dist/`
 - Build runtime: Node `24`
 
-Ghost webhook trigger remains configured via Netlify incoming hooks.
+Rebuilds trigger on git push — new posts are added as Markdown files in `content/posts/`.

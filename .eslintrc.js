@@ -53,7 +53,8 @@ module.exports = {
             "node": {
                 "extensions": [".js", ".jsx", ".ts", ".tsx"]
             }
-        }
+        },
+        "import/core-modules": ["astro:content"]
     },
     "plugins": [
         "react"

@@ -2,7 +2,7 @@
 import SiteHeader from './SiteHeader.astro';
 import SiteFooter from './SiteFooter.astro';
 import SiteBanner from './SiteBanner.astro';
-import type { GhostSettings } from '../../lib/ghost-types';
+import type { SiteSettings } from '../../lib/content-types';
 
 import '@fontsource-variable/bricolage-grotesque/opsz.css';
 import '@fontsource-variable/newsreader/index.css';
@@ -13,24 +13,13 @@ import '@fontsource/space-mono/700.css';
 import '../../styles/app.scss';
 
 interface Props {
-  settings: GhostSettings;
+  settings: SiteSettings;
   currentPath: string;
   bodyClass?: string;
   isHome?: boolean;
-  extraStyles?: string | null;
-  extraHeadHtml?: string | null;
-  extraFootHtml?: string | null;
 }
 
-const {
-  settings,
-  currentPath,
-  bodyClass = '',
-  isHome = false,
-  extraStyles = null,
-  extraHeadHtml = null,
-  extraFootHtml = null,
-} = Astro.props;
+const { settings, currentPath, bodyClass = '', isHome = false } = Astro.props;
 
 const descriptionParts = (settings.description || '')
   .split('.')
@@ -41,7 +30,7 @@ const currentYear = new Date().getFullYear();
 ---
 
 <!doctype html>
-<html lang={settings.lang || 'en'}>
+<html lang='en'>
   <head>
     <meta charset='utf-8' />
     <meta name='viewport' content='width=device-width,initial-scale=1' />
@@ -115,7 +104,7 @@ const currentYear = new Date().getFullYear();
       };
 
       // Copy buttons on build-time code frames — delegated so it
-      // covers posts and Ghost pages alike, and stays inert elsewhere.
+      // covers posts and pages alike, and stays inert elsewhere.
       const resetTimers = new WeakMap<HTMLElement, number>();
       document.addEventListener('click', (event) => {
         const target = event.target as HTMLElement | null;
@@ -149,10 +138,6 @@ const currentYear = new Date().getFullYear();
         setScrollProgress();
       });
     </script>
-    {settings.codeinjection_head && <Fragment set:html={settings.codeinjection_head} />}
-    {extraHeadHtml && <Fragment set:html={extraHeadHtml} />}
-    {settings.codeinjection_styles && <style is:inline set:html={settings.codeinjection_styles} />}
-    {extraStyles && <style is:inline set:html={extraStyles} />}
     <slot name='head' />
   </head>
   <body class={bodyClass}>
@@ -179,8 +164,6 @@ const currentYear = new Date().getFullYear();
         <SiteFooter settings={settings} currentPath={currentPath} currentYear={currentYear} />
       </div>
     </div>
-    {settings.codeinjection_foot && <Fragment set:html={settings.codeinjection_foot} />}
-    {extraFootHtml && <Fragment set:html={extraFootHtml} />}
   </body>
 </html>
 

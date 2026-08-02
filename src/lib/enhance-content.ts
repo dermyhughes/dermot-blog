@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import { buildGhostSrcset } from './images';
 import { siteUrl } from './site';
 
 export interface TocEntry {
@@ -12,8 +11,6 @@ export interface EnhancedContent {
   html: string;
   toc: TocEntry[];
 }
-
-const CONTENT_IMAGE_SIZES = '(max-width: 720px) 100vw, 720px';
 
 const slugifyHeading = (text: string) =>
   text
@@ -29,7 +26,13 @@ const mergeRel = (existing: string | undefined, additions: string[]) => {
   return Array.from(tokens).join(' ');
 };
 
-const SITE_ORIGIN = new URL(`${siteUrl}/`).origin;
+const SITE_ORIGIN = (() => {
+  try {
+    return new URL(`${siteUrl}/`).origin;
+  } catch {
+    return '';
+  }
+})();
 
 /* Origin comparison, not prefix — a lookalike host such as
    https://example.com.evil.tld would pass a startsWith(siteUrl) test.
@@ -48,9 +51,9 @@ const isExternalUrl = (href: string) => {
 };
 
 /**
- * Build-time enrichment of Ghost HTML: anchored headings + TOC data,
- * lazy responsive images, hardened external links, and code blocks
- * wrapped in a terminal-style frame with a copy affordance.
+ * Build-time enrichment of post/page HTML: anchored headings + TOC data,
+ * lazy-loaded images, hardened external links, and code blocks wrapped
+ * in a terminal-style frame with a copy affordance.
  */
 export const enhanceContent = (html?: string | null): EnhancedContent => {
   if (!html) {
@@ -103,17 +106,6 @@ export const enhanceContent = (html?: string | null): EnhancedContent => {
     }
 
     $image.attr('decoding', 'async');
-
-    const src = $image.attr('src');
-
-    if (src && !$image.attr('srcset')) {
-      const srcset = buildGhostSrcset(src);
-
-      if (srcset) {
-        $image.attr('srcset', srcset);
-        $image.attr('sizes', $image.attr('sizes') || CONTENT_IMAGE_SIZES);
-      }
-    }
   });
 
   $('a[href]').each((_, element) => {

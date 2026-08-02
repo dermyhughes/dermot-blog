@@ -1,15 +1,14 @@
 ---
-import type { GhostPage, GhostPost, GhostSettings, GhostTag } from '../../lib/ghost-types';
-import { getPublicTags } from '../../lib/content';
+import type { BlogPage, BlogPost, BlogTag, SiteSettings } from '../../lib/content-types';
 import { withSiteUrl } from '../../lib/site';
 import siteConfig from '../../utils/siteConfig';
 
 interface Props {
-  settings: GhostSettings;
+  settings: SiteSettings;
   canonical: string;
-  post?: GhostPost;
-  page?: GhostPage;
-  tag?: GhostTag;
+  post?: BlogPost;
+  page?: BlogPage;
+  tag?: BlogTag;
   title?: string;
   description?: string;
   image?: string | null;
@@ -21,41 +20,35 @@ const siteTitle = settings.title;
 const siteDescription = settings.description;
 const twitterHandle = settings.twitter || '';
 const twitterProfile = twitterHandle ? `https://twitter.com/${twitterHandle.replace(/^@/, '')}/` : null;
-const publisherLogo = withSiteUrl(settings.logo || siteConfig.siteIcon);
+const publisherLogo = withSiteUrl(settings.icon || siteConfig.siteIcon);
 
-const postTags = post ? getPublicTags(post.tags).map((item) => item.name) : [];
+const postTags = post ? (post.primaryTagLabel ? [post.primaryTagLabel] : post.tags) : [];
 const primaryTag = postTags[0] || '';
-const primaryAuthor = post?.authors?.[0]?.name || null;
+const primaryAuthor = post ? siteTitle : null;
 
 const pageType = tag ? 'Series' : 'WebSite';
 const pageTitleFromEntity = page?.title || tag?.name;
 const pageDescriptionFromEntity = page?.excerpt || tag?.description;
 const pageTitleBase =
   Astro.props.title ||
-  page?.meta_title ||
-  tag?.meta_title ||
+  page?.metaTitle ||
   pageTitleFromEntity ||
   siteConfig.siteTitleMeta ||
   siteTitle;
 const pageTitle = `${pageTitleBase} - ${siteTitle}`;
 const pageDescription =
   Astro.props.description ||
-  page?.meta_description ||
-  tag?.meta_description ||
+  page?.metaDescription ||
   pageDescriptionFromEntity ||
   siteConfig.siteDescriptionMeta ||
   siteDescription;
 
-const articleTitle = post?.meta_title || post?.title || pageTitle;
-const articleDescription = post?.meta_description || post?.excerpt || pageDescription;
+const articleTitle = post?.metaTitle || post?.title || pageTitle;
+const articleDescription = post?.metaDescription || post?.excerpt || pageDescription;
 
+const shareImageSource = post?.featureImage || page?.featureImage || tag?.featureImage;
 const shareImage = withSiteUrl(
-  Astro.props.image ||
-    post?.feature_image ||
-    page?.feature_image ||
-    tag?.feature_image ||
-    settings.cover_image ||
-    null,
+  Astro.props.image || (shareImageSource ? `/images/posts/${shareImageSource}` : null) || settings.coverImage || null,
 );
 
 const articleJsonLd = post
@@ -65,8 +58,8 @@ const articleJsonLd = post
       keywords: postTags.length ? postTags.join(', ') : undefined,
       headline: articleTitle,
       url: canonical,
-      datePublished: post.published_at,
-      dateModified: post.updated_at,
+      datePublished: post.publishedAt,
+      dateModified: post.updatedAt,
       author: primaryAuthor
         ? {
             '@type': 'Person',
@@ -135,22 +128,16 @@ const websiteJsonLd = {
 
 <meta property='og:site_name' content={siteTitle} />
 <meta property='og:type' content={post ? 'article' : 'website'} />
-<meta property='og:title' content={post ? post.og_title || articleTitle : pageTitle} />
-<meta
-  property='og:description'
-  content={post ? post.og_description || articleDescription : pageDescription}
-/>
+<meta property='og:title' content={post ? articleTitle : pageTitle} />
+<meta property='og:description' content={post ? articleDescription : pageDescription} />
 <meta property='og:url' content={canonical} />
 
-{post && <meta property='article:published_time' content={post.published_at || ''} />}
-{post && <meta property='article:modified_time' content={post.updated_at || ''} />}
+{post && <meta property='article:published_time' content={post.publishedAt || ''} />}
+{post && <meta property='article:modified_time' content={post.updatedAt || ''} />}
 {post && postTags.map((keyword) => <meta property='article:tag' content={keyword} />)}
 
-<meta name='twitter:title' content={post ? post.twitter_title || articleTitle : pageTitle} />
-<meta
-  name='twitter:description'
-  content={post ? post.twitter_description || articleDescription : pageDescription}
-/>
+<meta name='twitter:title' content={post ? articleTitle : pageTitle} />
+<meta name='twitter:description' content={post ? articleDescription : pageDescription} />
 <meta name='twitter:url' content={canonical} />
 {primaryTag && <meta name='twitter:label2' content='Filed under' />}
 {primaryTag && <meta name='twitter:data2' content={primaryTag} />}

@@ -1,10 +1,9 @@
 ---
-import type { GhostNavigationItem } from '../../lib/ghost-types';
 import { padIndex } from '../../lib/content';
 import { siteUrl } from '../../lib/site';
 
 interface Props {
-  data?: GhostNavigationItem[];
+  data?: { label: string; url: string }[];
   currentPath: string;
   navClass?: string;
   withIndex?: boolean;

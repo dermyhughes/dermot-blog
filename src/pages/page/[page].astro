@@ -5,7 +5,7 @@ import Pagination from '@/ui/pagination/Pagination.astro';
 import PostCard from '@/ui/posts/PostCard.astro';
 import PostFeed from '@/ui/posts/PostFeed.astro';
 import { buildPaginationContext, getHomePagePath, paginateHomeItems } from '@/lib/content';
-import { getAllPosts, getGhostSettings } from '@/lib/ghost';
+import { getAllPosts, getSiteSettings } from '@/lib/content-data';
 import { canonicalFromPath } from '@/lib/site';
 
 export async function getStaticPaths() {
@@ -18,7 +18,7 @@ export async function getStaticPaths() {
 }
 
 const pageNumber = Number(Astro.params.page);
-const settings = await getGhostSettings();
+const settings = getSiteSettings();
 const posts = await getAllPosts();
 
 const {
