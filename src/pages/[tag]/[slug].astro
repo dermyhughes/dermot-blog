@@ -3,7 +3,7 @@ import Layout from '@/ui/layout/Layout.astro';
 import MetaData from '@/ui/meta/MetaData.astro';
 import PostArticle from '@/ui/layout/PostArticle.astro';
 import { getPostTagSlug } from '@/lib/content';
-import { getAllPosts, getGhostSettings } from '@/lib/ghost';
+import { getAllPosts, getSiteSettings } from '@/lib/content-data';
 import { canonicalFromPath } from '@/lib/site';
 
 export async function getStaticPaths() {
@@ -18,13 +18,13 @@ export async function getStaticPaths() {
 }
 
 const { tag, slug } = Astro.params;
-const settings = await getGhostSettings();
+const settings = getSiteSettings();
 const posts = await getAllPosts();
 const postIndex = posts.findIndex((item) => item.slug === slug && getPostTagSlug(item) === tag);
 const post = postIndex >= 0 ? posts[postIndex] : undefined;
 
 if (!post) {
-  throw new Error(`Unable to find Ghost post for route /${tag}/${slug}/`);
+  throw new Error(`Unable to find post for route /${tag}/${slug}/`);
 }
 
 // Posts are sorted newest-first, so the previous index is the newer post.
@@ -35,13 +35,7 @@ const currentPath = `/${tag}/${slug}/`;
 const canonical = canonicalFromPath(currentPath);
 ---
 
-<Layout
-  settings={settings}
-  currentPath={currentPath}
-  extraStyles={post.codeinjection_styles}
-  extraHeadHtml={post.codeinjection_head}
-  extraFootHtml={post.codeinjection_foot}
->
+<Layout settings={settings} currentPath={currentPath}>
   <Fragment slot='head'>
     <MetaData settings={settings} canonical={canonical} post={post} />
   </Fragment>

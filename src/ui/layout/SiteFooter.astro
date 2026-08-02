@@ -2,10 +2,10 @@
 import Icon from '../icons/Icon.astro';
 import Navigation from '../navigation/Navigation.astro';
 import SocialLinks from '../navigation/SocialLinks.astro';
-import type { GhostSettings } from '../../lib/ghost-types';
+import type { SiteSettings } from '../../lib/content-types';
 
 interface Props {
-  settings: GhostSettings;
+  settings: SiteSettings;
   currentPath: string;
   currentYear: number;
 }
@@ -45,7 +45,7 @@ const { settings, currentPath, currentYear } = Astro.props;
 
     <div class='site-foot-bottom'>
       <span class='spec-label'>© {currentYear} — <b>{settings.title}</b></span>
-      <span class='spec-label site-foot-colophon'>built with astro × ghost</span>
+      <span class='spec-label site-foot-colophon'>built with astro</span>
       <a class='spec-label site-foot-top' href='#top'>
         <span aria-hidden='true'>^</span> back to top
       </a>

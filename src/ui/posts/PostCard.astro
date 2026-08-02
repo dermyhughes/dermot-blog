@@ -1,11 +1,12 @@
 ---
-import type { GhostPost } from '../../lib/ghost-types';
-import { formatPostDate, formatReadingTime, getPostPath, getPublicTags, padIndex } from '../../lib/content';
+import { Image } from 'astro:assets';
+import type { BlogPost } from '../../lib/content-types';
+import { formatPostDate, formatReadingTime, getPostPath, padIndex } from '../../lib/content';
 import getPostTransitionName from '../../lib/transitions';
-import { buildGhostSrcset } from '../../lib/images';
+import getPostImage from '../../lib/post-images';
 
 interface Props {
-  post: GhostPost;
+  post: BlogPost;
   index?: number;
   variant?: 'grid' | 'feature';
 }
@@ -13,18 +14,17 @@ interface Props {
 const { post, index = 1, variant = 'grid' } = Astro.props;
 
 const url = getPostPath(post);
-const publicTags = getPublicTags(post.tags);
-const primaryTag = publicTags[0] || null;
-const excerpt = post.excerpt || post.custom_excerpt || '';
+const excerpt = post.excerpt || '';
 const readingTime = formatReadingTime(post);
 const indexLabel = padIndex(index);
-const publishedDate = formatPostDate(post.published_at);
+const publishedDate = formatPostDate(post.publishedAt);
 
 const isFeature = variant === 'feature';
-const imageSrcset = buildGhostSrcset(post.feature_image);
+const featureImage = getPostImage(post.featureImage);
 const imageSizes = isFeature
   ? '(max-width: 980px) 100vw, 640px'
   : '(max-width: 680px) 100vw, (max-width: 980px) 92vw, 560px';
+const imageWidths = isFeature ? [480, 640, 960, 1280] : [400, 560, 720, 1120];
 const transitionName = getPostTransitionName(post);
 ---
 
@@ -34,12 +34,13 @@ const transitionName = getPostTransitionName(post);
 
   <div class='post-card-media' style={`view-transition-name: ${transitionName};`}>
     {
-      post.feature_image ? (
-        <img
+      featureImage ? (
+        <Image
           class='post-card-image'
-          src={post.feature_image}
-          srcset={imageSrcset}
-          sizes={imageSrcset ? imageSizes : undefined}
+          src={featureImage}
+          widths={imageWidths}
+          sizes={imageSizes}
+          format='webp'
           alt=''
           loading={isFeature ? 'eager' : 'lazy'}
           fetchpriority={isFeature ? 'high' : undefined}
@@ -52,10 +53,10 @@ const transitionName = getPostTransitionName(post);
       )
     }
     {
-      (primaryTag || post.featured) && (
+      (post.primaryTagLabel || post.featured) && (
         <div class='post-card-chips'>
           {post.featured && <span class='post-card-chip post-card-chip--featured'>featured</span>}
-          {primaryTag && <span class='post-card-chip'>{primaryTag.name}</span>}
+          {post.primaryTagLabel && <span class='post-card-chip'>{post.primaryTagLabel}</span>}
         </div>
       )
     }

@@ -2,10 +2,10 @@
 import ThemeToggle from '../navigation/ThemeToggle';
 import Navigation from '../navigation/Navigation.astro';
 import SocialLinks from '../navigation/SocialLinks.astro';
-import type { GhostSettings } from '../../lib/ghost-types';
+import type { SiteSettings } from '../../lib/content-types';
 
 interface Props {
-  settings: GhostSettings;
+  settings: SiteSettings;
   currentPath: string;
   isHome?: boolean;
 }

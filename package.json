@@ -1,6 +1,6 @@
 {
   "name": "dermot-blog",
-  "description": "Portfolio site for Dermot Hughes based on Ghost and Astro",
+  "description": "Portfolio site for Dermot Hughes built with Astro",
   "version": "3.0.0",
   "license": "MIT",
   "author": "Dermot Hughes",
@@ -13,8 +13,7 @@
     "url": "https://github.com/dermyhughes/dermot-blog/issues"
   },
   "keywords": [
-    "astro",
-    "ghost"
+    "astro"
   ],
   "main": "n/a",
   "engines": {
@@ -47,7 +46,6 @@
     "eslint": "^8.25.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-ghost": "2.16.0",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-prettier": "^4.2.1",
@@ -62,8 +60,6 @@
     "@fontsource-variable/bricolage-grotesque": "^5.2.10",
     "@fontsource-variable/newsreader": "^5.2.10",
     "@fontsource/space-mono": "^5.2.9",
-    "@tryghost/content-api": "^1.11.20",
-    "@tryghost/helpers": "1.1.74",
     "cheerio": "1.0.0-rc.11",
     "lodash": "4.17.23",
     "prismjs": "^1.30.0",

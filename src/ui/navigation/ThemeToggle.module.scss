@@ -50,12 +50,17 @@
   transform: translateY(120%) rotate(-90deg);
 }
 
-.button[data-mode='dark'] .sun {
+/* Keyed off html[data-theme], not the button's own React state — the
+   inline head script sets that attribute synchronously before first
+   paint, so the icon is correct immediately. The button always mounts
+   assuming light, so styling off its own state would flicker (or
+   animate) into place on every load in dark mode. */
+:global(html[data-theme='dark']) .sun {
   opacity: 0;
   transform: translateY(-120%) rotate(90deg);
 }
 
-.button[data-mode='dark'] .moon {
+:global(html[data-theme='dark']) .moon {
   opacity: 1;
   transform: none;
 }

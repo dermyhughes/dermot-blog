@@ -1,30 +1,29 @@
 ---
-import type { GhostPost } from '../../lib/ghost-types';
-import { formatPostDate, formatReadingTime, getPostPath, getPublicTags } from '../../lib/content';
+import { Image } from 'astro:assets';
+import type { BlogPost } from '../../lib/content-types';
+import { formatPostDate, formatReadingTime, getPostPath } from '../../lib/content';
 import { enhanceContent } from '../../lib/enhance-content';
-import { buildGhostSrcset } from '../../lib/images';
+import getPostImage from '../../lib/post-images';
 import getPostTransitionName from '../../lib/transitions';
 
 interface Props {
-  post: GhostPost;
-  newerPost?: GhostPost | null;
-  olderPost?: GhostPost | null;
+  post: BlogPost;
+  newerPost?: BlogPost | null;
+  olderPost?: BlogPost | null;
 }
 
 const { post, newerPost = null, olderPost = null } = Astro.props;
 
-const publicTags = getPublicTags(post.tags);
-const primaryTag = publicTags[0] || null;
 const readingTime = formatReadingTime(post);
-const publishedDate = formatPostDate(post.published_at);
-const publishedDateTime = post.published_at ? post.published_at.slice(0, 10) : null;
+const publishedDate = formatPostDate(post.publishedAt);
+const publishedDateTime = post.publishedAt ? post.publishedAt.slice(0, 10) : null;
 
 const { html, toc } = enhanceContent(post.html);
 const showToc = toc.length >= 3;
-const featureSrcset = buildGhostSrcset(post.feature_image);
+const featureImage = getPostImage(post.featureImage);
 const transitionName = getPostTransitionName(post);
 
-const formatNavDate = (navPost: GhostPost) => formatPostDate(navPost.published_at);
+const formatNavDate = (navPost: BlogPost) => formatPostDate(navPost.publishedAt);
 ---
 
 <div id='scroll-progress' aria-hidden='true'></div>
@@ -32,7 +31,7 @@ const formatNavDate = (navPost: GhostPost) => formatPostDate(navPost.published_a
 <article class='content post-article'>
   <header class='post-head'>
     <p class='post-kicker spec-label'>
-      {primaryTag && <b>[ {primaryTag.name} ]</b>}
+      {post.primaryTagLabel && <b>[ {post.primaryTagLabel} ]</b>}
       {
         publishedDate && (
           <time datetime={publishedDateTime}> · {publishedDate}</time>
@@ -44,12 +43,13 @@ const formatNavDate = (navPost: GhostPost) => formatPostDate(navPost.published_a
   </header>
 
   {
-    post.feature_image && (
+    featureImage && (
       <figure class='post-feature'>
-        <img
-          src={post.feature_image}
-          srcset={featureSrcset}
-          sizes={featureSrcset ? '(max-width: 980px) 100vw, 920px' : undefined}
+        <Image
+          src={featureImage}
+          widths={[480, 720, 920, 1380]}
+          sizes='(max-width: 980px) 100vw, 920px'
+          format='webp'
           alt=''
           loading='eager'
           fetchpriority='high'

@@ -12,33 +12,28 @@ import {
   POSTS_PER_PAGE,
 } from '@/lib/content';
 import {
-  assertNoPageTagCollisions,
   getAllPosts,
   getAllTags,
-  getGhostSettings,
+  getSiteSettings,
   getPostsByTagSlug,
   getTagBySlug,
-} from '@/lib/ghost';
+} from '@/lib/content-data';
 import { canonicalFromPath } from '@/lib/site';
 
 export async function getStaticPaths() {
-  await assertNoPageTagCollisions();
-
   const [tags, posts] = await Promise.all([getAllTags(), getAllPosts()]);
 
   const tagToPosts = new Map<string, number>();
   posts.forEach((post) => {
-    post.tags.forEach((tag) => {
-      if (tag.visibility !== 'internal') {
-        tagToPosts.set(tag.slug, (tagToPosts.get(tag.slug) || 0) + 1);
-      }
+    post.tags.forEach((tagSlug) => {
+      tagToPosts.set(tagSlug, (tagToPosts.get(tagSlug) || 0) + 1);
     });
   });
 
   const paths: Array<{ params: { slug: string; page: string } }> = [];
 
   tags.forEach((tag) => {
-    const postCount = tagToPosts.get(tag.slug) || tag.count?.posts || 0;
+    const postCount = tagToPosts.get(tag.slug) || tag.postCount || 0;
     const totalPages = Math.ceil(postCount / POSTS_PER_PAGE);
 
     for (let page = 2; page <= totalPages; page += 1) {
@@ -56,11 +51,11 @@ export async function getStaticPaths() {
 
 const slug = Astro.params.slug || '';
 const pageNumber = Number(Astro.params.page);
-const settings = await getGhostSettings();
+const settings = getSiteSettings();
 const tag = await getTagBySlug(slug);
 
 if (!tag) {
-  throw new Error(`Unable to find Ghost tag for route /${slug}/`);
+  throw new Error(`Unable to find tag for route /${slug}/`);
 }
 
 const allTagPosts = await getPostsByTagSlug(slug);

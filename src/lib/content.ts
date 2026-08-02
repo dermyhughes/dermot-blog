@@ -1,4 +1,4 @@
-import type { GhostPost, GhostTag } from './ghost-types';
+import type { BlogPost } from './content-types';
 import siteConfig from '../utils/siteConfig';
 
 export const POSTS_PER_PAGE = siteConfig.postsPerPage;
@@ -10,18 +10,15 @@ export interface PaginationContext {
   numberOfPages: number;
 }
 
-export const getPostTagSlug = (post: GhostPost) => post.primary_tag?.slug || 'post';
+export const getPostTagSlug = (post: BlogPost) => post.primaryTag || 'blog';
 
-export const getPostPath = (post: GhostPost) => `/${getPostTagSlug(post)}/${post.slug}/`;
+export const getPostPath = (post: BlogPost) => `/${getPostTagSlug(post)}/${post.slug}/`;
 
 export const getHomePagePath = (pageNumber: number) =>
   pageNumber <= 1 ? '/' : `/page/${pageNumber}/`;
 
 export const getTagPagePath = (tagSlug: string, pageNumber: number) =>
   pageNumber <= 1 ? `/${tagSlug}/` : `/${tagSlug}/page/${pageNumber}/`;
-
-export const getPublicTags = (tags: GhostTag[] = []) =>
-  tags.filter((tag) => tag.visibility !== 'internal');
 
 /* Display date for post metadata, e.g. "04 Jul 2026" */
 export const formatPostDate = (date: string | null | undefined) =>
@@ -36,9 +33,9 @@ export const formatPostDate = (date: string | null | undefined) =>
 /* Zero-padded counter for the recurring spec-sheet motif, e.g. "007" */
 export const padIndex = (value: number, width = 3) => String(value).padStart(width, '0');
 
-export const formatReadingTime = (post: GhostPost) => {
-  if (typeof post.reading_time === 'number' && post.reading_time > 0) {
-    return `${post.reading_time} min read`;
+export const formatReadingTime = (post: BlogPost) => {
+  if (typeof post.readingTime === 'number' && post.readingTime > 0) {
+    return `${post.readingTime} min read`;
   }
 
   const plainText = post.plaintext || '';
