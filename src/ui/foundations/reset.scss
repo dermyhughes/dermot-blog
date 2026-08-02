@@ -197,10 +197,6 @@ svg:not(:root) {
     overflow: hidden;
 }
 
-mark {
-    background-color: #fdffb6;
-}
-
 code,
 kbd,
 pre,
@@ -260,10 +256,6 @@ input {
     }
 
     line-height: normal;
-
-    &:focus {
-        outline: none;
-    }
 
     &[type="checkbox"],
     &[type="radio"] {

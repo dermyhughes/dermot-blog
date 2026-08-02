@@ -346,24 +346,19 @@ const marqueeGroup = Array.from({ length: 2 }).flatMap(() => marqueeRoles);
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
   }
 
+  /* Light mode: the tube stays dark, but its plastic frame is an
+     ivory-cased 80s set rather than a near-black bezel */
+  :global(:root[data-theme='light']) .crt-bezel {
+    background: linear-gradient(180deg, #f6f1e6, #e9e0cd);
+    border-color: rgba(120, 94, 48, 0.28);
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5);
+  }
+
   /* The tube is always lit — re-scope dark tokens so the scene
      glows the same in both site themes */
   .crt-screen {
-    --color-text-strong: #faf8ff;
-    --color-text-primary: #e9e2f8;
-    --color-text-secondary: #b3a6d4;
-    --color-text-muted: #9082b5;
-    --color-border-subtle: rgba(186, 156, 255, 0.14);
-    --color-border-strong: rgba(196, 170, 255, 0.3);
-    --color-accent-text: var(--color-pink-400);
-    --color-accent-2-text: var(--color-cyan-400);
-    --focus-ring-color: var(--color-pink-400);
-    --glass-bg: rgba(18, 11, 31, 0.72);
+    @include mix.scope-dark;
     --grid-line: rgba(186, 156, 255, 0.09);
-    --aura-pink: rgba(255, 46, 136, 0.2);
-    --aura-violet: rgba(124, 77, 255, 0.17);
-    --aura-cyan: rgba(45, 226, 230, 0.11);
-    --glow-pink: 0 0 24px rgba(255, 46, 136, 0.35);
 
     position: relative;
     isolation: isolate;

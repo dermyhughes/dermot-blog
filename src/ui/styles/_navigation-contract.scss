@@ -42,7 +42,7 @@
 
       &::after {
         transform: scaleX(1);
-        box-shadow: var(--glow-pink);
+        box-shadow: var(--hover-glow);
       }
     }
   }

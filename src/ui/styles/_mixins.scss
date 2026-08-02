@@ -1,3 +1,5 @@
+@use '../foundations/tokens';
+
 /* Shared component recipes — the single source for interaction
 /* patterns that recur across components. Layout concerns (display,
 /* padding, gap) stay with the caller; these mixins own only the
@@ -20,8 +22,8 @@
     color: inherit;
     text-decoration: none;
     transform: translateY($lift);
-    border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border-subtle));
-    box-shadow: var(--shadow-md), var(--glow-pink);
+    border-color: color-mix(in srgb, var(--color-accent-text) 45%, var(--color-border-strong));
+    box-shadow: var(--shadow-md), var(--hover-glow);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -34,9 +36,12 @@
 }
 
 /* Chromatic-aberration ghosts — pink/cyan copies of the element's
-   text (mirrored via a data-line attribute) drifting behind it.
-   Used by the banner title and the 404 code. Callers supply their
-   own idle/jitter keyframes where they animate the ghosts. */
+   text (mirrored via a data-line attribute) drifting behind it. Dark
+   mode reads them as additive light (blurred, screen-normal); light
+   mode reads them as ink misregistration (crisp, multiplied — see
+   the --registration-blend / --ghost-* tokens). Used by the banner
+   title and the 404 code. Callers supply their own idle/jitter
+   keyframes where they animate the ghosts. */
 @mixin chromatic-ghosts($shift-x: 0.045em, $shift-y: 0.01em) {
   position: relative;
   z-index: 0;
@@ -48,14 +53,15 @@
     inset: 0;
     pointer-events: none;
     user-select: none;
+    mix-blend-mode: var(--registration-blend);
   }
 
-  /* Pink ghost — shifted left, softly blurred */
+  /* Pink ghost — shifted left */
   &::before {
     z-index: -1;
     color: var(--color-accent);
-    opacity: 0.8;
-    filter: blur(2px);
+    opacity: var(--ghost-opacity-1);
+    filter: blur(var(--ghost-blur-1));
     transform: translate3d(-#{$shift-x}, #{$shift-y}, 0);
   }
 
@@ -63,8 +69,16 @@
   &::after {
     z-index: -2;
     color: var(--color-accent-2);
-    opacity: 0.7;
-    filter: blur(3px);
+    opacity: var(--ghost-opacity-2);
+    filter: blur(var(--ghost-blur-2));
     transform: translate3d(#{$shift-x}, -#{$shift-y}, 0);
   }
+}
+
+/* Re-scopes the dark theme's tokens onto an element that must always
+   read as the emissive screen, regardless of the site's theme (the
+   hero CRT tube). Keeps that invariant structural instead of a
+   hand-copied token subset that can drift from theme-dark. */
+@mixin scope-dark {
+  @include tokens.theme-dark;
 }

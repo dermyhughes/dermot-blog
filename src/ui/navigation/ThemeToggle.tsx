@@ -10,7 +10,7 @@ import type { ThemePreference } from '../../utils/theme';
 import styles from './ThemeToggle.module.scss';
 
 const ThemeToggle = React.memo(() => {
-  const [theme, setTheme] = useState<ThemePreference>('light');
+  const [, setTheme] = useState<ThemePreference>('light');
 
   useEffect(() => {
     const rootTheme = document.documentElement.dataset.theme;
@@ -36,8 +36,6 @@ const ThemeToggle = React.memo(() => {
     return () => unsubscribe();
   }, []);
 
-  const label = `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`;
-
   const handleToggle = useCallback(() => {
     setTheme((prev) => {
       const nextTheme = prev === 'dark' ? 'light' : 'dark';
@@ -52,9 +50,8 @@ const ThemeToggle = React.memo(() => {
       type='button'
       className={styles.button}
       onClick={handleToggle}
-      aria-label={label}
-      title={label}
-      aria-pressed={theme === 'dark'}
+      aria-label='Toggle colour theme'
+      title='Toggle colour theme'
     >
       <span className={styles.dial} aria-hidden='true'>
         <svg className={styles.sun} viewBox='0 0 24 24' fill='none' focusable='false'>

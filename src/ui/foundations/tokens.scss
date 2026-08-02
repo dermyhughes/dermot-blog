@@ -1,8 +1,10 @@
 /* Design tokens — "Vapour Spec"
 /*
-/* A vapourwave/synthwave editorial system: violet-void dark theme,
-/* warm-haze light theme, hot pink dominant accent with cyan as the
-/* chromatic counterpart. Components must consume tokens, never raw
+/* A vapourwave/synthwave editorial system, "Ink & Phosphor": dark
+/* mode is the emissive phosphor screen (glows, bloom, additive
+/* chromatic ghosts); light mode is the printed spec sheet (offset
+/* ink registration, multiply blends, hard-edged plates). Same
+/* motifs, two physics. Components must consume tokens, never raw
 /* values, so both themes (and any future theme) stay in lockstep.
 /* ---------------------------------------------------------- */
 
@@ -14,16 +16,11 @@
   --color-pink-400: #ff6aa5;
   --color-pink-500: #ff2e88;
   --color-pink-600: #e0186f;
-  --color-pink-700: #b80f59;
-  --color-cyan-300: #8df3f5;
   --color-cyan-400: #5ce8ec;
   --color-cyan-500: #2de2e6;
   --color-cyan-600: #0aa8b4;
   --color-cyan-700: #0e7490;
-  --color-violet-400: #a78bfa;
   --color-violet-500: #9061ff;
-  --color-violet-600: #6d3df0;
-  --color-mint-500: #43ecb0;
 
   /* Spacing scale */
   --space-3xs: 0.25rem;
@@ -58,11 +55,6 @@
   --text-sm: 1.4rem;
   --text-md: 1.6rem;
   --text-lg: 1.8rem;
-  --text-xl: 2.4rem;
-  --text-2xl: 3.2rem;
-  --text-3xl: 4rem;
-  --text-4xl: 5rem;
-  --text-5xl: clamp(5.6rem, 10vw, 22rem);
 
   /* Typography — fluid display scale */
   --display-2xl: clamp(5.2rem, 2rem + 11vw, 16rem);
@@ -112,6 +104,10 @@
   --z-overlay: 100;
   --z-skip: 200;
   --z-progress: 300;
+
+  /* Fractal-noise grain, shared by the page backdrop. The CRT hero
+     uses its own (higher-frequency, animated) noise for static. */
+  --noise-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Theme recipes
@@ -120,26 +116,21 @@
   color-scheme: dark;
 
   /* Surfaces */
-  --color-base: #0b0613;
   --color-bg: #0e0918;
   --color-surface: #150e24;
   --color-surface-subtle: #120b1f;
   --color-surface-muted: #1d1430;
   --color-surface-raised: #221839;
-  --color-surface-contrast: #f3eeff;
-  --color-surface-inverse: #faf8ff;
 
   /* Borders */
   --color-border-subtle: rgba(186, 156, 255, 0.14);
   --color-border-strong: rgba(196, 170, 255, 0.28);
-  --color-border: var(--color-border-subtle);
 
   /* Text */
   --color-text-strong: #faf8ff;
   --color-text-primary: #e9e2f8;
   --color-text-secondary: #b3a6d4;
   --color-text-muted: #9082b5;
-  --color-text-inverse: #1b1029;
 
   /* Accents (text-safe variants meet WCAG AA on this theme's bg) */
   --color-accent: var(--color-pink-500);
@@ -162,19 +153,29 @@
   --glass-border: rgba(255, 106, 165, 0.14);
   --blur-glass: 18px;
 
-  /* Effects */
+  /* Effects — ambient bloom, the phosphor's own light */
   --shadow-sm: 0 1px 2px rgba(2, 0, 8, 0.5);
   --shadow-md: 0 10px 30px rgba(2, 0, 8, 0.5);
   --shadow-lg: 0 24px 60px rgba(2, 0, 8, 0.6);
   --glow-pink: 0 0 24px rgba(255, 46, 136, 0.35);
-  --glow-pink-strong: 0 0 12px rgba(255, 46, 136, 0.5), 0 0 48px rgba(255, 46, 136, 0.3);
-  --glow-cyan: 0 0 24px rgba(45, 226, 230, 0.3);
+
+  /* Interactive glow — hover/focus affordance. Dark: a soft bloom,
+     same physics as ambient light. */
+  --hover-glow: 0 0 24px rgba(255, 46, 136, 0.35);
+  --hover-glow-filter: drop-shadow(0 0 8px var(--color-accent));
+
+  /* Chromatic-aberration registration — additive light ghosting. */
+  --registration-blend: normal;
+  --ghost-opacity-1: 0.8;
+  --ghost-opacity-2: 0.7;
+  --ghost-blur-1: 2px;
+  --ghost-blur-2: 3px;
+  --plate-blur: 2px;
 
   /* Selection + UI chrome */
   --color-selection-bg: rgba(255, 46, 136, 0.4);
   --color-selection-text: #fff5fa;
   --focus-ring-color: var(--color-pink-400);
-  --focus-ring: 0 0 0 3px rgba(255, 106, 165, 0.4);
   --scrollbar-thumb: #3d2e5c;
   --scrollbar-track: #0e0918;
 
@@ -187,26 +188,21 @@
   color-scheme: light;
 
   /* Surfaces */
-  --color-base: #f1ecf7;
-  --color-bg: #f7f4fb;
-  --color-surface: #fffdff;
-  --color-surface-subtle: #f7f4fb;
-  --color-surface-muted: #efe9f7;
+  --color-bg: #f2edf8;
+  --color-surface: #fbf8fd;
+  --color-surface-subtle: #f8f4fb;
+  --color-surface-muted: #e8e0f0;
   --color-surface-raised: #ffffff;
-  --color-surface-contrast: #221833;
-  --color-surface-inverse: #160e26;
 
   /* Borders */
-  --color-border-subtle: rgba(88, 52, 134, 0.14);
-  --color-border-strong: rgba(88, 52, 134, 0.26);
-  --color-border: var(--color-border-subtle);
+  --color-border-subtle: rgba(88, 52, 134, 0.18);
+  --color-border-strong: rgba(88, 52, 134, 0.32);
 
   /* Text */
   --color-text-strong: #1c1129;
   --color-text-primary: #2c1f40;
   --color-text-secondary: #5c4f75;
   --color-text-muted: #71648c;
-  --color-text-inverse: #faf8ff;
 
   /* Accents (text-safe variants meet WCAG AA on this theme's bg) */
   --color-accent: var(--color-pink-500);
@@ -216,32 +212,45 @@
   --color-link: #c40f64;
   --color-link-hover: var(--color-pink-600);
 
-  /* Vapour atmosphere */
-  --aura-pink: rgba(255, 122, 186, 0.34);
-  --aura-violet: rgba(167, 139, 250, 0.3);
-  --aura-cyan: rgba(103, 232, 249, 0.3);
+  /* Vapour atmosphere — quieter than dark; the paper doesn't emit */
+  --aura-pink: rgba(255, 122, 186, 0.16);
+  --aura-violet: rgba(167, 139, 250, 0.14);
+  --aura-cyan: rgba(103, 232, 249, 0.14);
   --grid-line: rgba(88, 52, 134, 0.06);
-  --grain-opacity: 0.035;
+  --grain-opacity: 0.02;
 
   /* Glass */
-  --glass-bg: rgba(255, 253, 255, 0.72);
-  --glass-bg-strong: rgba(255, 253, 255, 0.88);
-  --glass-border: rgba(196, 15, 100, 0.12);
+  --glass-bg: rgba(252, 250, 255, 0.85);
+  --glass-bg-strong: rgba(252, 250, 255, 0.94);
+  --glass-border: rgba(196, 15, 100, 0.22);
   --blur-glass: 18px;
 
-  /* Effects */
-  --shadow-sm: 0 1px 2px rgba(50, 24, 80, 0.08);
-  --shadow-md: 0 10px 30px rgba(50, 24, 80, 0.12);
-  --shadow-lg: 0 24px 60px rgba(50, 24, 80, 0.16);
-  --glow-pink: 0 0 24px rgba(255, 46, 136, 0.22);
-  --glow-pink-strong: 0 0 12px rgba(255, 46, 136, 0.3), 0 0 48px rgba(255, 46, 136, 0.18);
-  --glow-cyan: 0 0 24px rgba(10, 168, 180, 0.2);
+  /* Effects — printed ink, not light */
+  --shadow-sm: 0 1px 2px rgba(50, 24, 80, 0.1);
+  --shadow-md: 0 10px 30px rgba(50, 24, 80, 0.16);
+  --shadow-lg: 0 24px 60px rgba(50, 24, 80, 0.2);
+  --glow-pink: 0 0 16px rgba(255, 46, 136, 0.18);
+
+  /* Interactive glow — hover/focus affordance. Light: hard-edged
+     offset ink plates, riso-style, instead of a bloom that would
+     just smudge against paper. */
+  --hover-glow: 3px 3px 0 rgba(255, 46, 136, 0.32), 6px 6px 0 rgba(10, 168, 180, 0.22);
+  --hover-glow-filter: drop-shadow(2px 2px 0 rgba(255, 46, 136, 0.35))
+    drop-shadow(-2px -2px 0 rgba(10, 168, 180, 0.25));
+
+  /* Chromatic-aberration registration — subtractive ink misprint:
+     crisp, multiplied, no blur. */
+  --registration-blend: multiply;
+  --ghost-opacity-1: 0.55;
+  --ghost-opacity-2: 0.42;
+  --ghost-blur-1: 0px;
+  --ghost-blur-2: 0px;
+  --plate-blur: 0px;
 
   /* Selection + UI chrome */
   --color-selection-bg: rgba(255, 46, 136, 0.25);
   --color-selection-text: #1c1129;
   --focus-ring-color: #c40f64;
-  --focus-ring: 0 0 0 3px rgba(196, 15, 100, 0.3);
   --scrollbar-thumb: #cdbfe2;
   --scrollbar-track: #f7f4fb;
 

@@ -7,13 +7,13 @@ const canUseDOM = typeof document !== 'undefined';
 
 export const getStoredTheme = (): ThemePreference | null => {
   if (!isBrowser) return null;
-  const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
 
-  if (storedTheme === 'light' || storedTheme === 'dark') {
-    return storedTheme;
+  try {
+    const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+    return storedTheme === 'light' || storedTheme === 'dark' ? storedTheme : null;
+  } catch {
+    return null;
   }
-
-  return null;
 };
 
 export const getSystemTheme = (): ThemePreference => {
@@ -44,7 +44,13 @@ export const applyTheme = (theme: ThemePreference) => {
 
 export const persistTheme = (theme: ThemePreference) => {
   if (!isBrowser) return;
-  window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+
+  try {
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch {
+    // Storage unavailable (e.g. Safari private mode) — theme still
+    // applies for this session via applyTheme, just doesn't persist.
+  }
 };
 
 export const subscribeToSystemTheme = (callback: (theme: ThemePreference) => void) => {

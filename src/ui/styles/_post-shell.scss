@@ -70,13 +70,15 @@
     &::before {
       transform: translate(-1rem, 1rem);
       background: color-mix(in srgb, var(--color-accent) 16%, transparent);
-      filter: blur(2px);
+      filter: blur(var(--plate-blur));
+      mix-blend-mode: var(--registration-blend);
     }
 
     &::after {
       transform: translate(1rem, -1rem);
       background: color-mix(in srgb, var(--color-accent-2) 13%, transparent);
-      filter: blur(2px);
+      filter: blur(var(--plate-blur));
+      mix-blend-mode: var(--registration-blend);
     }
   }
 
