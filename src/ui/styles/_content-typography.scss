@@ -144,6 +144,14 @@
     figure {
       margin: var(--space-lg) 0;
 
+      &.kg-width-wide {
+        position: relative;
+        left: 50%;
+        width: min(var(--layout-width-content), calc(100vw - (2 * var(--space-lg))));
+        max-width: none;
+        transform: translateX(-50%);
+      }
+
       img {
         border-radius: var(--radius-md);
       }
