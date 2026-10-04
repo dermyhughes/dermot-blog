@@ -28,12 +28,12 @@ export const getSiteSettings = (): SiteSettings => ({
 export const getAllPosts = async (): Promise<BlogPost[]> => {
   const isPreview =
     import.meta.env.DEV || ['deploy-preview', 'branch-deploy'].includes(process.env.CONTEXT || '');
-  const entries = await getCollection('posts', ({ data }) => isPreview || !data.draft);
+  const entries = await getCollection(
+    'posts',
+    ({ data }) => isPreview || (!data.draft && Boolean(data.publishedAt)),
+  );
   return entries
     .map((entry) => {
-      if (!isPreview && !entry.data.publishedAt) {
-        throw new Error(`${entry.id}: run npm run prepare:publish before a production build.`);
-      }
       const html = entry.rendered?.html ?? '';
       return {
         ...entry.data,
