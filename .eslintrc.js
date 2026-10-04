@@ -33,6 +33,12 @@ module.exports = {
                     }
                 ]
             }
+        },
+        {
+            "files": ["src/content.config.ts"],
+            "rules": {
+                "import/prefer-default-export": "off"
+            }
         }
     ],
     "parserOptions": {
@@ -54,7 +60,7 @@ module.exports = {
                 "extensions": [".js", ".jsx", ".ts", ".tsx"]
             }
         },
-        "import/core-modules": ["astro:content"]
+        "import/core-modules": ["astro:content", "astro/loaders"]
     },
     "plugins": [
         "react"
