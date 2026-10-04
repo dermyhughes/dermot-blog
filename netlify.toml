@@ -1,6 +1,8 @@
 [build]
   command = "NODE_ENV=production npm run build"
   publish = "dist/"
+  # GitHub Actions prepares and deploys production. Keep Netlify PR/branch previews.
+  ignore = 'test "$CONTEXT" = "production"'
 
 [build.environment]
   NODE_VERSION = "24"

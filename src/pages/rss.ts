@@ -18,6 +18,8 @@ const escapeXml = (value: string) =>
 const cdata = (value: string) => `<![CDATA[${value.replace(/]]>/g, ']]]]><![CDATA[>')}]]>`;
 
 const generateItem = (post: BlogPost) => {
+  if (post.draft || !post.publishedAt) return '';
+
   const fallbackPath = `/${getPostTagSlug(post)}/${post.slug}/`;
   const itemUrl = post.canonicalUrl || withSiteUrl(fallbackPath) || '';
   const html = post.html || '';
