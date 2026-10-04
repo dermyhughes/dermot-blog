@@ -22,6 +22,7 @@ jobs:
         uses: actions/checkout@v7.0.1
         with:
           ref: main
+          fetch-depth: 0
 
       - name: Set up Node
         uses: actions/setup-node@v7.0.0
@@ -30,6 +31,22 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      - name: Detect post or publication workflow changes
+        id: post_changes
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          SHA: ${{ github.sha }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            publish_posts=true
+          elif git diff --quiet "$BEFORE" "$SHA" -- content/posts .github/workflows/publish.yml; then
+            publish_posts=false
+          else
+            publish_posts=true
+          fi
+          echo "publish_posts=$publish_posts" >> "$GITHUB_OUTPUT"
 
       - name: Resolve and verify the Netlify project
         id: netlify
@@ -56,14 +73,18 @@ jobs:
           appendFileSync(process.env.GITHUB_OUTPUT, `site_id=${site.id}\n`);
           JS
 
-      - run: npm run test:publication
+      - name: Test post publication scripts
+        if: steps.post_changes.outputs.publish_posts == 'true'
+        run: npm run test:publication
       - name: Set dates for posts ready to publish
+        if: steps.post_changes.outputs.publish_posts == 'true'
         run: npm run prepare:publish
       - run: npm run check
       - run: npm run lint
       - run: npm run build
 
       - name: Save publication dates
+        if: steps.post_changes.outputs.publish_posts == 'true'
         run: |
           git add -- content/posts
           if ! git diff --cached --quiet; then
