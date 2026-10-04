@@ -57,8 +57,12 @@ undated posts, validates and builds the site, commits those dates back to
 Drafts can be merged into `main` without being published.
 
 Ready posts without dates are labelled **Ready to publish** in local and Netlify
-previews. They are omitted from RSS until the publication job dates them.
-Production builds reject undated ready posts unless preparation has run first.
+previews. They are omitted from RSS and production until the publication job
+dates them. A push that changes `content/posts/` or the Publish workflow runs the
+post tests and date preparation; other `main` pushes still build and deploy
+application changes without running those content scripts. Use **Publish** from
+the Actions UI to publish a ready post when no post file has changed, or to retry
+a failed release.
 Existing dated posts without a `draft` field continue to work.
 
 The job preserves existing publication dates, including on retries and later
