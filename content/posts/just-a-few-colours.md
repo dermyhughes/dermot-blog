@@ -11,10 +11,11 @@ metaTitle: "Just a few colours. How hard could it be?"
 metaDescription: "A crowded chart with a paginated legend starts a journey through colour, identity and the decisions a design system needs to share."
 ---
 
-<p>One of the designs I was shown early in my work on data visualisation for Aperture, our design system at Bazaarvoice, was a usage chart with dozens of lines. I think they were API keys. Each key had its own colour and a label made of random characters. There were so many that the legend needed pagination.</p>
-<p>My first reaction was: why on earth would anyone design this?</p>
+<p>Early in my work on data visualisation for Aperture, our design system at Bazaarvoice, I was shown an existing page buried somewhere in our interface. It showed usage of API keys over time.</p>
+<p>My first thought: WTF is this?</p>
+<p>The chart plotted dozens of keys at once. Each had its own colour and a label made of random characters. There were so many that the legend needed pagination.</p>
 <figure class="kg-card kg-image-card kg-width-wide"><img class="kg-image" src="/images/posts/data-visualisation-colours-api-key-overload.webp" width="1536" height="1024" loading="lazy" decoding="async" alt="Illustrative usage chart with usage count on the vertical axis and time on the horizontal axis. Dozens of coloured lines overlap and cross. A full-height legend on the right lists twenty random key identifiers with colour swatches; pagination reads 1 of 2 and 1–20 of 40."><figcaption>An illustrative reconstruction, with invented data and key labels. The legend has pages. The chart still has all the lines.</figcaption></figure>
-<p>To follow a key, you have to find its name, remember its colour and pick its trail out of the tangle. The random strings give you little to recognise. Notice an interesting line first, and its name might be on another page of the legend. Even forty beautifully chosen colours would leave a lot of work for the reader.</p>
+<p>To follow a single key, you have to find its label, remember its colour and pick its trail out of the tangle. The random strings give you little to recognise. Notice an interesting line first, and its label might be on another page of the legend. Even forty beautifully chosen colours would leave a lot of work for the reader.</p>
 <p>That chart made the brief of choosing chart colours look rather less straightforward. A row of swatches in Figma, with matching tokens in code, would only cover part of it.</p>
 
 <h2 id="fifty-colours-use-eight">Fifty colours. Use eight.</h2>
