@@ -26,7 +26,7 @@
     "preview": "astro preview",
     "preview:ci": "astro build && astro preview --host 127.0.0.1 --port 4173",
     "check": "astro check",
-    "lint": "eslint --no-error-on-unmatched-pattern src/**/*.{js,jsx,ts,tsx,json}",
+    "lint": "eslint --no-error-on-unmatched-pattern 'src/**/*.{js,jsx,ts,tsx,json}'",
     "prepare:publish": "node scripts/publish-posts.mjs",
     "test:publication": "node --test scripts/*.test.mjs",
     "lint:fix": "eslint --fix --no-error-on-unmatched-pattern 'src/**/*.{js,jsx,ts,tsx,json}'",
