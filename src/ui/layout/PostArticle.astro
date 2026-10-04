@@ -15,7 +15,8 @@ interface Props {
 const { post, newerPost = null, olderPost = null } = Astro.props;
 
 const readingTime = formatReadingTime(post);
-const publishedDate = formatPostDate(post.publishedAt);
+const publicationLabel = post.draft ? 'Draft' : !post.publishedAt ? 'Ready to publish' : null;
+const publishedDate = publicationLabel ? null : formatPostDate(post.publishedAt);
 const publishedDateTime = post.publishedAt ? post.publishedAt.slice(0, 10) : null;
 
 const { html, toc } = enhanceContent(post.html);
@@ -23,7 +24,8 @@ const showToc = toc.length >= 3;
 const featureImage = getPostImage(post.featureImage);
 const transitionName = getPostTransitionName(post);
 
-const formatNavDate = (navPost: BlogPost) => formatPostDate(navPost.publishedAt);
+const formatNavDate = (navPost: BlogPost) =>
+  navPost.draft ? 'Draft' : formatPostDate(navPost.publishedAt) || 'Ready to publish';
 ---
 
 <div id='scroll-progress' aria-hidden='true'></div>
@@ -32,6 +34,7 @@ const formatNavDate = (navPost: BlogPost) => formatPostDate(navPost.publishedAt)
   <header class='post-head'>
     <p class='post-kicker spec-label'>
       {post.primaryTagLabel && <b>[ {post.primaryTagLabel} ]</b>}
+      {publicationLabel && <span> · {publicationLabel}</span>}
       {
         publishedDate && (
           <time datetime={publishedDateTime}> · {publishedDate}</time>

@@ -4,7 +4,11 @@ import tags from './tags';
 import type { BlogPost, BlogPage, BlogTag, SiteSettings } from './content-types';
 
 function extractPlaintext(html: string): string {
-  return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+  return html
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 export const getSiteSettings = (): SiteSettings => ({
@@ -22,9 +26,14 @@ export const getSiteSettings = (): SiteSettings => ({
 // ─── Posts ──────────────────────────────────────────────────────
 
 export const getAllPosts = async (): Promise<BlogPost[]> => {
-  const entries = await getCollection('posts');
+  const isPreview =
+    import.meta.env.DEV || ['deploy-preview', 'branch-deploy'].includes(process.env.CONTEXT || '');
+  const entries = await getCollection('posts', ({ data }) => isPreview || !data.draft);
   return entries
     .map((entry) => {
+      if (!isPreview && !entry.data.publishedAt) {
+        throw new Error(`${entry.id}: run npm run prepare:publish before a production build.`);
+      }
       const html = entry.rendered?.html ?? '';
       return {
         ...entry.data,
@@ -34,6 +43,9 @@ export const getAllPosts = async (): Promise<BlogPost[]> => {
       };
     })
     .sort((a, b) => {
+      const leftUnpublished = a.draft || !a.publishedAt;
+      const rightUnpublished = b.draft || !b.publishedAt;
+      if (leftUnpublished !== rightUnpublished) return leftUnpublished ? -1 : 1;
       const left = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
       const right = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
       return right - left;

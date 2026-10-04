@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1020" viewBox="0 0 1200 1020" role="img" aria-labelledby="title desc"><title id="title">Proposed API-key comparison chart</title><desc id="desc">Conceptual comparison view with three selected keys from forty available. Checkout service, Mobile app and Reporting have readable example names, identifier suffixes, direct labels and different markers. A searchable key selector replaces the paginated colour legend. An Overview tab would show total usage. All data and names are invented; this is a proposal awaiting testing.</desc><g font-family="Arial, Helvetica, sans-serif"><rect x="0" y="0" width="1200" height="1020" rx="0" fill="#ffffff" stroke="none"/>
+<text x="48" y="44" font-size="17" fill="#526178" font-weight="600" >PROPOSAL / A COMPARISON YOU CHOOSE</text>
+<text x="48" y="95" font-size="38" fill="#17243b" font-weight="600" >Usage over time</text>
+<text x="48" y="133" font-size="21" fill="#526178" font-weight="400" >40 keys available · 3 selected for comparison · invented data</text>
+<rect x="959" y="69" width="193" height="49" rx="8" fill="#f4f6fa" stroke="#dce2eb"/>
+<text x="985" y="100" font-size="19" fill="#17243b" font-weight="400" >Last 30 days</text>
+<rect x="48" y="160" width="296" height="54" rx="8" fill="#f4f6fa" stroke="none"/>
+<text x="71" y="194" font-size="19" fill="#526178" font-weight="400" >Overview</text>
+<rect x="166" y="165" width="173" height="44" rx="6" fill="#17243b" stroke="none"/>
+<text x="187" y="194" font-size="19" fill="#ffffff" font-weight="600" >Compare keys</text>
+<text x="903" y="194" font-size="19" fill="#526178" font-weight="400" >3 of 5 comparison slots</text>
+<text x="48" y="252" font-size="18" fill="#526178" font-weight="400" >Usage count</text>
+<path d="M105 592 L818 592" fill="none" stroke="#e3e8f0" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="85" y="598" font-size="17" fill="#526178" font-weight="400" text-anchor="end">0</text>
+<path d="M105 516.5 L818 516.5" fill="none" stroke="#e3e8f0" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="85" y="522.5" font-size="17" fill="#526178" font-weight="400" text-anchor="end">250</text>
+<path d="M105 441 L818 441" fill="none" stroke="#e3e8f0" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="85" y="447" font-size="17" fill="#526178" font-weight="400" text-anchor="end">500</text>
+<path d="M105 365.5 L818 365.5" fill="none" stroke="#e3e8f0" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="85" y="371.5" font-size="17" fill="#526178" font-weight="400" text-anchor="end">750</text>
+<path d="M105 290 L818 290" fill="none" stroke="#e3e8f0" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="85" y="296" font-size="17" fill="#526178" font-weight="400" text-anchor="end">1,000</text>
+<text x="105" y="627" font-size="17" fill="#526178" font-weight="400" text-anchor="middle">Sep 1</text>
+<text x="227.93103448275863" y="627" font-size="17" fill="#526178" font-weight="400" text-anchor="middle">Sep 6</text>
+<text x="350.86206896551727" y="627" font-size="17" fill="#526178" font-weight="400" text-anchor="middle">Sep 11</text>
+<text x="473.7931034482759" y="627" font-size="17" fill="#526178" font-weight="400" text-anchor="middle">Sep 16</text>
+<text x="596.7241379310345" y="627" font-size="17" fill="#526178" font-weight="400" text-anchor="middle">Sep 21</text>
+<text x="719.655172413793" y="627" font-size="17" fill="#526178" font-weight="400" text-anchor="middle">Sep 26</text>
+<text x="818" y="627" font-size="17" fill="#526178" font-weight="400" text-anchor="middle">Sep 30</text>
+<text x="461.5" y="661" font-size="18" fill="#526178" font-weight="400" text-anchor="middle">Time</text>
+<path d="M105.00 434.96 L129.59 425.90 L154.17 430.43 L178.76 421.37 L203.34 410.80 L227.93 419.86 L252.52 427.41 L277.10 424.39 L301.69 413.82 L326.28 418.35 L350.86 424.39 L375.45 415.33 L400.03 403.25 L424.62 416.84 L449.21 412.31 L473.79 410.80 L498.38 395.70 L522.97 403.25 L547.55 404.76 L572.14 412.31 L596.72 409.29 L621.31 398.72 L645.90 404.76 L670.48 394.19 L695.07 389.66 L719.66 395.70 L744.24 386.64 L768.83 397.21 L793.41 400.23 L818.00 392.68" fill="none" stroke="#2454d6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="105" cy="434.96000000000004" r="5" fill="#2454d6" stroke="white" stroke-width="1.5"/>
+<circle cx="227.93103448275863" cy="419.86" r="5" fill="#2454d6" stroke="white" stroke-width="1.5"/>
+<circle cx="350.86206896551727" cy="424.39" r="5" fill="#2454d6" stroke="white" stroke-width="1.5"/>
+<circle cx="473.7931034482759" cy="410.8" r="5" fill="#2454d6" stroke="white" stroke-width="1.5"/>
+<circle cx="596.7241379310345" cy="409.28999999999996" r="5" fill="#2454d6" stroke="white" stroke-width="1.5"/>
+<circle cx="719.655172413793" cy="395.7" r="5" fill="#2454d6" stroke="white" stroke-width="1.5"/>
+<circle cx="818" cy="392.67999999999995" r="5" fill="#2454d6" stroke="white" stroke-width="1.5"/>
+<path d="M827 392.67999999999995 L847 392.67999999999995" fill="none" stroke="#2454d6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="862" cy="392.67999999999995" r="5" fill="#2454d6" stroke="white" stroke-width="1.5"/>
+<text x="878" y="398.67999999999995" font-size="21" fill="#17243b" font-weight="600" >Checkout service</text>
+<text x="878" y="424.67999999999995" font-size="16" fill="#526178" font-weight="400" font-family="monospace">…vX4p</text>
+<path d="M105.00 501.40 L129.59 493.85 L154.17 498.38 L178.76 490.83 L203.34 495.36 L227.93 486.30 L252.52 492.34 L277.10 496.87 L301.69 493.85 L326.28 487.81 L350.86 484.79 L375.45 489.32 L400.03 493.85 L424.62 486.30 L449.21 481.77 L473.79 474.22 L498.38 478.75 L522.97 483.28 L547.55 477.24 L572.14 471.20 L596.72 475.73 L621.31 480.26 L645.90 474.22 L670.48 465.16 L695.07 471.20 L719.66 468.18 L744.24 472.71 L768.83 463.65 L793.41 471.20 L818.00 465.16" fill="none" stroke="#7937bd" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="100" y="496.4" width="10" height="10" rx="1" fill="#7937bd" stroke="white"/>
+<rect x="222.93103448275863" y="481.3" width="10" height="10" rx="1" fill="#7937bd" stroke="white"/>
+<rect x="345.86206896551727" y="479.79" width="10" height="10" rx="1" fill="#7937bd" stroke="white"/>
+<rect x="468.7931034482759" y="469.22" width="10" height="10" rx="1" fill="#7937bd" stroke="white"/>
+<rect x="591.7241379310345" y="470.73" width="10" height="10" rx="1" fill="#7937bd" stroke="white"/>
+<rect x="714.655172413793" y="463.18" width="10" height="10" rx="1" fill="#7937bd" stroke="white"/>
+<rect x="813" y="460.16" width="10" height="10" rx="1" fill="#7937bd" stroke="white"/>
+<path d="M827 465.16 L847 465.16" fill="none" stroke="#7937bd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="857" y="460.16" width="10" height="10" rx="1" fill="#7937bd" stroke="white"/>
+<text x="878" y="471.16" font-size="21" fill="#17243b" font-weight="600" >Mobile app</text>
+<text x="878" y="497.16" font-size="16" fill="#526178" font-weight="400" font-family="monospace">…wF6h</text>
+<path d="M105.00 549.72 L129.59 543.68 L154.17 548.21 L178.76 540.66 L203.34 537.64 L227.93 542.17 L252.52 546.70 L277.10 543.68 L301.69 539.15 L326.28 537.64 L350.86 542.17 L375.45 540.66 L400.03 536.13 L424.62 531.60 L449.21 534.62 L473.79 539.15 L498.38 537.64 L522.97 533.11 L547.55 530.09 L572.14 534.62 L596.72 531.60 L621.31 525.56 L645.90 528.58 L670.48 530.09 L695.07 527.07 L719.66 522.54 L744.24 525.56 L768.83 528.58 L793.41 522.54 L818.00 519.52" fill="none" stroke="#087f43" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M105 543.72 L111 554.72 L99 554.72 Z" fill="#087f43" stroke="white" stroke-width="1.5"/>
+<path d="M227.93103448275863 536.17 L233.93103448275863 547.17 L221.93103448275863 547.17 Z" fill="#087f43" stroke="white" stroke-width="1.5"/>
+<path d="M350.86206896551727 536.17 L356.86206896551727 547.17 L344.86206896551727 547.17 Z" fill="#087f43" stroke="white" stroke-width="1.5"/>
+<path d="M473.7931034482759 533.15 L479.7931034482759 544.15 L467.7931034482759 544.15 Z" fill="#087f43" stroke="white" stroke-width="1.5"/>
+<path d="M596.7241379310345 525.6 L602.7241379310345 536.6 L590.7241379310345 536.6 Z" fill="#087f43" stroke="white" stroke-width="1.5"/>
+<path d="M719.655172413793 516.54 L725.655172413793 527.54 L713.655172413793 527.54 Z" fill="#087f43" stroke="white" stroke-width="1.5"/>
+<path d="M818 513.52 L824 524.52 L812 524.52 Z" fill="#087f43" stroke="white" stroke-width="1.5"/>
+<path d="M827 519.52 L847 519.52" fill="none" stroke="#087f43" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M862 513.52 L868 524.52 L856 524.52 Z" fill="#087f43" stroke="white" stroke-width="1.5"/>
+<text x="878" y="525.52" font-size="21" fill="#17243b" font-weight="600" >Reporting</text>
+<text x="878" y="551.52" font-size="16" fill="#526178" font-weight="400" font-family="monospace">…cP7s</text>
+<path d="M48 695 L1152 695" fill="none" stroke="#dce2eb" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="48" y="734" font-size="24" fill="#17243b" font-weight="600" >Choose keys</text>
+<rect x="294" y="708" width="455" height="47" rx="7" fill="#ffffff" stroke="#b9c4d3"/>
+<circle cx="315" cy="729" r="6" fill="none" stroke="#526178" stroke-width="1.5"/>
+<path d="M319 734 L324 739" fill="none" stroke="#526178" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="338" y="738" font-size="18" fill="#526178" font-weight="400" >Search name or key identifier</text>
+<text x="1009" y="738" font-size="17" fill="#526178" font-weight="400" >Clear selection</text>
+<text x="99" y="791" font-size="17" fill="#526178" font-weight="600" >Name / identifier</text>
+<text x="831" y="791" font-size="17" fill="#526178" font-weight="600" >Usage in selected period</text>
+<path d="M48 807 L1152 807" fill="none" stroke="#e3e8f0" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="48" y="819" width="24" height="24" rx="4" fill="#17243b" stroke="none"/>
+<path d="M54 831 L59 836 L67 825" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="99" cy="831" r="6" fill="#2454d6" stroke="white" stroke-width="1.5"/>
+<text x="117" y="838" font-size="20" fill="#17243b" font-weight="600" >Checkout service</text>
+<text x="467" y="838" font-size="18" fill="#526178" font-weight="400" font-family="monospace">…vX4p</text>
+<text x="1078" y="838" font-size="20" fill="#17243b" font-weight="400" text-anchor="end">18,095</text>
+<path d="M48 855 L1152 855" fill="none" stroke="#e3e8f0" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="48" y="868" width="24" height="24" rx="4" fill="#17243b" stroke="none"/>
+<path d="M54 880 L59 885 L67 874" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="93" y="874" width="12" height="12" rx="1" fill="#7937bd" stroke="white"/>
+<text x="117" y="887" font-size="20" fill="#17243b" font-weight="600" >Mobile app</text>
+<text x="467" y="887" font-size="18" fill="#526178" font-weight="400" font-family="monospace">…wF6h</text>
+<text x="1078" y="887" font-size="20" fill="#17243b" font-weight="400" text-anchor="end">10,910</text>
+<path d="M48 904 L1152 904" fill="none" stroke="#e3e8f0" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="48" y="917" width="24" height="24" rx="4" fill="#17243b" stroke="none"/>
+<path d="M54 929 L59 934 L67 923" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M99 922 L106 935 L92 935 Z" fill="#087f43" stroke="white" stroke-width="1.5"/>
+<text x="117" y="936" font-size="20" fill="#17243b" font-weight="600" >Reporting</text>
+<text x="467" y="936" font-size="18" fill="#526178" font-weight="400" font-family="monospace">…cP7s</text>
+<text x="1078" y="936" font-size="20" fill="#17243b" font-weight="400" text-anchor="end">5,660</text>
+<path d="M48 953 L1152 953" fill="none" stroke="#e3e8f0" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="48" y="999" font-size="18" fill="#2454d6" font-weight="600" text-decoration="underline">Browse all 40 keys</text>
+<text x="255" y="999" font-size="18" fill="#526178" font-weight="400">Selected lines keep their labels, colours and markers.</text></g></svg>

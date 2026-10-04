@@ -17,7 +17,8 @@ const url = getPostPath(post);
 const excerpt = post.excerpt || '';
 const readingTime = formatReadingTime(post);
 const indexLabel = padIndex(index);
-const publishedDate = formatPostDate(post.publishedAt);
+const publicationLabel = post.draft ? 'Draft' : !post.publishedAt ? 'Ready to publish' : null;
+const publishedDate = publicationLabel ? null : formatPostDate(post.publishedAt);
 
 const isFeature = variant === 'feature';
 const featureImage = getPostImage(post.featureImage);
@@ -65,6 +66,7 @@ const transitionName = getPostTransitionName(post);
   <div class='post-card-body'>
     <p class='post-card-meta spec-label'>
       <b>[ {indexLabel} ]</b>
+      {publicationLabel && <span class='post-card-meta-item'>{publicationLabel}</span>}
       {publishedDate && <span class='post-card-meta-item'>{publishedDate}</span>}
       <span class='post-card-meta-item'>{readingTime}</span>
     </p>

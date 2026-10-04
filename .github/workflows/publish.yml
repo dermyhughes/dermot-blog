@@ -1,0 +1,96 @@
+name: Publish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: production-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: main
+
+      - name: Set up Node
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Resolve and verify the Netlify project
+        id: netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID || 'dermothughes.com' }}
+        run: |
+          node --input-type=module <<'JS'
+          import { appendFileSync } from 'node:fs';
+          if (!process.env.NETLIFY_AUTH_TOKEN) {
+            throw new Error('Set the NETLIFY_TOKEN Actions secret before publishing.');
+          }
+          const selector = encodeURIComponent(process.env.NETLIFY_SITE_ID);
+          const response = await fetch(`https://api.netlify.com/api/v1/sites/${selector}`, {
+            headers: { Authorization: `Bearer ${process.env.NETLIFY_AUTH_TOKEN}` },
+          });
+          if (!response.ok) {
+            throw new Error(`Netlify project lookup failed (${response.status}). Check NETLIFY_TOKEN and NETLIFY_SITE_ID.`);
+          }
+          const site = await response.json();
+          if (!/^[a-f0-9-]{36}$/i.test(site.id)) {
+            throw new Error('Netlify did not return a valid project ID.');
+          }
+          appendFileSync(process.env.GITHUB_OUTPUT, `site_id=${site.id}\n`);
+          JS
+
+      - run: npm run test:publication
+      - name: Set dates for posts ready to publish
+        run: npm run prepare:publish
+      - run: npm run check
+      - run: npm run lint
+      - run: npm run build
+
+      - name: Save publication dates
+        run: |
+          git add -- content/posts
+          if ! git diff --cached --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'Set first-publication dates'
+            git push origin HEAD:main
+          fi
+
+      - name: Check that this release is still current
+        id: current
+        run: |
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ]; then
+            echo 'deploy=true' >> "$GITHUB_OUTPUT"
+          else
+            echo '::notice::Main changed during this run. The newer publishing job will deploy it.'
+          fi
+
+      - name: Package the built site
+        if: steps.current.outputs.deploy == 'true'
+        working-directory: dist
+        run: zip -qr "$RUNNER_TEMP/site.zip" .
+
+      - name: Deploy the built site
+        if: steps.current.outputs.deploy == 'true'
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_SITE_ID: ${{ steps.netlify.outputs.site_id }}
+        run: node scripts/deploy-site.mjs "$RUNNER_TEMP/site.zip"

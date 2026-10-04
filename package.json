@@ -27,6 +27,8 @@
     "preview:ci": "astro build && astro preview --host 127.0.0.1 --port 4173",
     "check": "astro check",
     "lint": "eslint --no-error-on-unmatched-pattern src/**/*.{js,jsx,ts,tsx,json}",
+    "prepare:publish": "node scripts/publish-posts.mjs",
+    "test:publication": "node --test scripts/*.test.mjs",
     "lint:fix": "eslint --fix --no-error-on-unmatched-pattern 'src/**/*.{js,jsx,ts,tsx,json}'",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,astro,css,md,json}' --config ./.prettierrc",
     "test:visual:setup": "playwright install chromium webkit",
@@ -53,7 +55,8 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^2.7.1",
     "sass": "^1.97.3",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "yaml": "2.9.1"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",

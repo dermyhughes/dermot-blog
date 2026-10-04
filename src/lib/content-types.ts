@@ -1,7 +1,8 @@
 export interface BlogPost {
   title: string;
   slug: string;
-  publishedAt: string;
+  draft: boolean;
+  publishedAt?: string;
   updatedAt?: string;
   tags: string[];
   primaryTag?: string;

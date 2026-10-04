@@ -58,7 +58,7 @@ const articleJsonLd = post
       keywords: postTags.length ? postTags.join(', ') : undefined,
       headline: articleTitle,
       url: canonical,
-      datePublished: post.publishedAt,
+      datePublished: post.draft ? undefined : post.publishedAt,
       dateModified: post.updatedAt,
       author: primaryAuthor
         ? {
@@ -125,6 +125,7 @@ const websiteJsonLd = {
 {post ? <title>{articleTitle}</title> : <title>{pageTitle}</title>}
 <meta name='description' content={post ? articleDescription : pageDescription} />
 <link rel='canonical' href={canonical} />
+{post && (post.draft || !post.publishedAt) && <meta name='robots' content='noindex, nofollow' />}
 
 <meta property='og:site_name' content={siteTitle} />
 <meta property='og:type' content={post ? 'article' : 'website'} />
@@ -132,7 +133,7 @@ const websiteJsonLd = {
 <meta property='og:description' content={post ? articleDescription : pageDescription} />
 <meta property='og:url' content={canonical} />
 
-{post && <meta property='article:published_time' content={post.publishedAt || ''} />}
+{post && !post.draft && post.publishedAt && <meta property='article:published_time' content={post.publishedAt} />}
 {post && <meta property='article:modified_time' content={post.updatedAt || ''} />}
 {post && postTags.map((keyword) => <meta property='article:tag' content={keyword} />)}
 

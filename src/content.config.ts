@@ -5,7 +5,8 @@ const postsCollection = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './content/posts' }),
   schema: z.object({
     title: z.string(),
-    publishedAt: z.string().datetime({ offset: true }),
+    draft: z.boolean().default(false),
+    publishedAt: z.string().datetime({ offset: true }).optional(),
     updatedAt: z.string().datetime({ offset: true }).optional(),
     tags: z.array(z.string()).default([]),
     primaryTag: z.string().optional(),
