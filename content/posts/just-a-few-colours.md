@@ -9,6 +9,7 @@ featured: false
 featureImage: "just-a-few-colours.svg"
 metaTitle: "Just a few colours. How hard could it be?"
 metaDescription: "A crowded chart with a paginated legend starts a journey through colour, identity and the decisions a design system needs to share."
+publishedAt: "2026-10-04T20:54:15.747Z"
 ---
 
 <p>Early in my work on data visualisation for Aperture, our design system at Bazaarvoice, I was shown an existing page buried somewhere in our interface. It showed usage of API keys over time.</p>
