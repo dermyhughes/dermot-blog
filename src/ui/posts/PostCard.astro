@@ -23,9 +23,9 @@ const publishedDate = publicationLabel ? null : formatPostDate(post.publishedAt)
 const isFeature = variant === 'feature';
 const featureImage = getPostImage(post.featureImage);
 const imageSizes = isFeature
-  ? '(max-width: 980px) 100vw, 640px'
-  : '(max-width: 680px) 100vw, (max-width: 980px) 92vw, 560px';
-const imageWidths = isFeature ? [480, 640, 960, 1280] : [400, 560, 720, 1120];
+  ? '(max-width: 980px) calc(100vw - clamp(36px, 8vw, 96px) - 30px), calc((min(100vw, 1180px) - clamp(36px, 8vw, 96px) - 50px) / 2.1)'
+  : '(max-width: 980px) calc(100vw - clamp(36px, 8vw, 96px) - 20px), calc((min(100vw, 1180px) - clamp(36px, 8vw, 96px) - 20px) / 2 - 20px)';
+const imageWidths = [320, 480, 560, 720, 960, 1120, 1440, 1840];
 const transitionName = getPostTransitionName(post);
 ---
 
@@ -39,12 +39,12 @@ const transitionName = getPostTransitionName(post);
         <Image
           class='post-card-image'
           src={featureImage}
+          width={Math.min(featureImage.width, isFeature ? 640 : 560)}
           widths={imageWidths}
           sizes={imageSizes}
           format='webp'
           alt=''
-          loading={isFeature ? 'eager' : 'lazy'}
-          fetchpriority={isFeature ? 'high' : undefined}
+          loading='lazy'
           decoding='async'
         />
       ) : (

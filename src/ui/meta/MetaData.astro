@@ -2,6 +2,7 @@
 import type { BlogPage, BlogPost, BlogTag, SiteSettings } from '../../lib/content-types';
 import { withSiteUrl } from '../../lib/site';
 import siteConfig from '../../utils/siteConfig';
+import { getShareImage } from '../../lib/post-images';
 
 interface Props {
   settings: SiteSettings;
@@ -47,9 +48,16 @@ const articleTitle = post?.metaTitle || post?.title || pageTitle;
 const articleDescription = post?.metaDescription || post?.excerpt || pageDescription;
 
 const shareImageSource = post?.featureImage || page?.featureImage || tag?.featureImage;
+const optimizedShareImage = Astro.props.image ? undefined : await getShareImage(shareImageSource);
 const shareImage = withSiteUrl(
-  Astro.props.image || (shareImageSource ? `/images/posts/${shareImageSource}` : null) || settings.coverImage || null,
+  Astro.props.image ||
+    optimizedShareImage?.src ||
+    (shareImageSource ? `/images/posts/${shareImageSource}` : null) ||
+    settings.coverImage ||
+    null,
 );
+const shareImageWidth = optimizedShareImage?.attributes.width || siteConfig.shareImageWidth;
+const shareImageHeight = optimizedShareImage?.attributes.height || siteConfig.shareImageHeight;
 
 const articleJsonLd = post
   ? {
@@ -70,8 +78,8 @@ const articleJsonLd = post
         ? {
             '@type': 'ImageObject',
             url: shareImage,
-            width: siteConfig.shareImageWidth,
-            height: siteConfig.shareImageHeight,
+            width: shareImageWidth,
+            height: shareImageHeight,
           }
         : undefined,
       publisher: {
@@ -100,8 +108,8 @@ const websiteJsonLd = {
     ? {
         '@type': 'ImageObject',
         url: shareImage,
-        width: siteConfig.shareImageWidth,
-        height: siteConfig.shareImageHeight,
+        width: shareImageWidth,
+        height: shareImageHeight,
       }
     : undefined,
   publisher: {
@@ -148,8 +156,8 @@ const websiteJsonLd = {
 {shareImage && <meta name='twitter:card' content='summary_large_image' />}
 {shareImage && <meta name='twitter:image' content={shareImage} />}
 {shareImage && <meta property='og:image' content={shareImage} />}
-{shareImage && <meta property='og:image:width' content={String(siteConfig.shareImageWidth)} />}
-{shareImage && <meta property='og:image:height' content={String(siteConfig.shareImageHeight)} />}
+{shareImage && <meta property='og:image:width' content={String(shareImageWidth)} />}
+{shareImage && <meta property='og:image:height' content={String(shareImageHeight)} />}
 
 {
   post ? (

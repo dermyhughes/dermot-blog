@@ -22,6 +22,7 @@ Set these before running dev/build:
 - `npm run lint` - run ESLint for JS/TS files
 - `npm run prepare:publish` - stamp ready posts that have no publication date
 - `npm run test:publication` - check publication stamping, retries and deployment handling
+- `npm run test:images` - verify image assets, loading and feed URLs in an existing production build
 - `npm run test:visual:setup` - install Playwright browser binaries (Chromium + WebKit)
 - `npm run test:visual` - run Playwright visual regression tests
 - `npm run test:visual:update` - create/update visual snapshot baselines
@@ -71,6 +72,24 @@ so a failed upload can be retried without choosing a new date. After a failed
 release, rerun **Publish** on `main` from the Actions UI. Manual runs always
 check out current `main`. Keep `publishedAt` when editing a published post;
 `updatedAt` remains optional revision metadata.
+
+## Images
+
+Set a post's `featureImage` to a filename in `src/assets/posts/`. Astro creates
+responsive WebP files for articles and cards, plus a bounded JPEG for social
+previews and RSS. Prefer a raster feature image when social previews matter;
+SVGs remain vector files. Article feature images load eagerly, while feed cards
+load lazily.
+
+For images inside post HTML, put the original in `public/images/posts/` and use
+`<img src="/images/posts/filename.png" alt="...">`. The HTML image pipeline
+generates responsive WebP files and adds dimensions to reserve layout space.
+Use `kg-width-wide` on the enclosing figure for a wider image. Existing public
+URLs remain available for direct links. Remote images and author-supplied
+`srcset`/`picture` markup retain their own image handling.
+
+Run `npm run build` then `npm run test:images` to check the rendered images and
+social/RSS URLs. Hashed assets under `/_astro/` are cached for one year.
 
 ## CV Removal Redirects
 

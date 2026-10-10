@@ -60,7 +60,7 @@ module.exports = {
                 "extensions": [".js", ".jsx", ".ts", ".tsx"]
             }
         },
-        "import/core-modules": ["astro:content", "astro/loaders"]
+        "import/core-modules": ["astro:content", "astro:assets", "astro/loaders"]
     },
     "plugins": [
         "react"

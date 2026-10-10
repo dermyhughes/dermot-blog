@@ -1,5 +1,6 @@
 ---
 import { enhanceContent } from '../../lib/enhance-content';
+import optimizeContentImages from '../../lib/content-images';
 
 interface Props {
   title: string;
@@ -9,7 +10,7 @@ interface Props {
 
 const { title, html = null, centered = false } = Astro.props;
 const articleClass = centered ? 'content content-centered' : 'content';
-const enhancedHtml = html !== null ? enhanceContent(html).html : null;
+const enhancedHtml = html !== null ? enhanceContent(await optimizeContentImages(html)).html : null;
 ---
 
 <article class={articleClass}>

@@ -56,6 +56,7 @@ const CatImage = React.memo(() => {
         width={cat.width}
         height={cat.height}
         loading='lazy'
+        decoding='async'
       />
     </div>
   );
