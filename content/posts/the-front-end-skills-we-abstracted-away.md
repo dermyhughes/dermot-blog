@@ -7,6 +7,7 @@ primaryTagLabel: 'Blog'
 excerpt: "I've spent years encouraging engineers to use our design system. It's a little unfair to then wonder why they're less practised at the work I've asked them to stop doing."
 metaDescription: 'A design system engineer reflects on abstraction, front-end skills, and where the judgement to build good interfaces comes from.'
 featured: false
+publishedAt: "2026-10-10T22:21:46.559Z"
 ---
 
 I've spent a fair amount of my career telling other developers not to write CSS.
