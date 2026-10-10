@@ -1,5 +1,5 @@
 ---
-title: "I Told Them Not to Write CSS"
+title: "The Irony of Abstraction"
 draft: false
 tags: ["blog"]
 primaryTag: "blog"
@@ -16,6 +16,8 @@ Which is an odd thing to admit, because I love CSS. Semantic HTML, accessibility
 Brad Frost calls this the [front of the front end](https://bradfrost.com/blog/post/front-of-the-front-end-and-back-of-the-front-end-web-development/). It's a useful description of work that can otherwise disappear inside a job title expected to cover everything from typography to authentication.
 
 Working on design systems, I've tried to make that expertise useful beyond the things I build myself. Use our components. Use the tokens. Follow the patterns. We've spent time getting the styling and behaviour right, so every product team doesn't have to start again.
+
+If the design system is doing its job and the components meet a team's needs, engineers shouldn't have to build and style those same elements themselves. That's what I mean by not writing CSS: the system should already be taking care of that work.
 
 Then, occasionally, I'll find myself frustrated that a front-end engineer isn't particularly comfortable with CSS, or hasn't spotted a problem with the semantics of an interface.
 
