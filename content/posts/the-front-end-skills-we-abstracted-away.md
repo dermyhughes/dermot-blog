@@ -1,11 +1,11 @@
 ---
-title: "The Irony of Abstraction"
+title: 'The Irony of Abstraction'
 draft: false
-tags: ["blog"]
-primaryTag: "blog"
-primaryTagLabel: "Blog"
+tags: ['blog']
+primaryTag: 'blog'
+primaryTagLabel: 'Blog'
 excerpt: "I've spent years encouraging engineers to use our design system. It's a little unfair to then wonder why they're less practised at the work I've asked them to stop doing."
-metaDescription: "A design system engineer reflects on abstraction, front-end skills, and where the judgement to build good interfaces comes from."
+metaDescription: 'A design system engineer reflects on abstraction, front-end skills, and where the judgement to build good interfaces comes from.'
 featured: false
 ---
 
@@ -17,7 +17,7 @@ Brad Frost calls this the [front of the front end](https://bradfrost.com/blog/po
 
 Working on design systems, I've tried to make that expertise useful beyond the things I build myself. Use our components. Use the tokens. Follow the patterns. We've spent time getting the styling and behaviour right, so every product team doesn't have to start again.
 
-If the design system is doing its job and the components meet a team's needs, engineers shouldn't have to build and style those same elements themselves. That's what I mean by not writing CSS: the system should already be taking care of that work.
+If the design system is doing its job and the components meet a team's needs, engineers shouldn't have to build and style those same elements themselves, right?
 
 Then, occasionally, I'll find myself frustrated that a front-end engineer isn't particularly comfortable with CSS, or hasn't spotted a problem with the semantics of an interface.
 
@@ -53,7 +53,7 @@ Choosing and combining components takes judgement. Some decisions need product k
 
 You can learn that judgement through reviewing work, testing with users, pairing with someone or investigating a bug. Writing everything yourself isn't the only route. But those opportunities need to exist somewhere. I suspect I've sometimes assumed that experience would arrive alongside the ability to import the package.
 
-There's a much older version of this tension in Lisanne Bainbridge's 1983 paper, [*Ironies of Automation*](https://gwern.net/doc/sociology/technology/1983-bainbridge.pdf). She describes how automating routine work can leave operators with fewer opportunities to maintain their skills, while still expecting them to intervene when something unusual goes wrong.
+There's a much older version of this tension in Lisanne Bainbridge's 1983 paper, [_Ironies of Automation_](https://gwern.net/doc/sociology/technology/1983-bainbridge.pdf). She describes how automating routine work can leave operators with fewer opportunities to maintain their skills, while still expecting them to intervene when something unusual goes wrong.
 
 A component library is a rather different proposition from an industrial control system. This isn't evidence that design systems make developers worse. But I recognise the assumption: we'll take care of the ordinary cases, and trust you to have the expertise for the difficult ones.
 
@@ -67,7 +67,7 @@ There's some relevant evidence, with limits. In [a small study published by Anth
 
 That's one short experiment about learning a library, not a verdict on a career spent using AI. It does suggest that finishing a task and learning from it can come apart. The way we use the help matters.
 
-In [*Who Are We Writing For Now?*](/blog/who-are-we-writing-for-now/), I wrote about how decisions used to hide inside the work of building, and how implementing a plan could reveal that it was wrong. That leaves me wondering about the learning that happened along the way. Working through the code, encountering an edge case or writing a test gave us occasions to question what we'd planned.
+In [_Who Are We Writing For Now?_](/blog/who-are-we-writing-for-now/), I wrote about how decisions used to hide inside the work of building, and how implementing a plan could reveal that it was wrong. That leaves me wondering about the learning that happened along the way. Working through the code, encountering an edge case or writing a test gave us occasions to question what we'd planned.
 
 AI can get us to something that looks finished before we've asked those questions. The implementation can contain assumptions nobody consciously examined. The screen exists; the discovery that should have changed it may never have happened.
 
