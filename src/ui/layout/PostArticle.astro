@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import type { BlogPost } from '../../lib/content-types';
 import { formatPostDate, formatReadingTime, getPostPath } from '../../lib/content';
 import { enhanceContent } from '../../lib/enhance-content';
+import optimizeContentImages from '../../lib/content-images';
 import getPostImage from '../../lib/post-images';
 import getPostTransitionName from '../../lib/transitions';
 
@@ -19,7 +20,7 @@ const publicationLabel = post.draft ? 'Draft' : !post.publishedAt ? 'Ready to pu
 const publishedDate = publicationLabel ? null : formatPostDate(post.publishedAt);
 const publishedDateTime = post.publishedAt ? post.publishedAt.slice(0, 10) : null;
 
-const { html, toc } = enhanceContent(post.html);
+const { html, toc } = enhanceContent(await optimizeContentImages(post.html));
 const showToc = toc.length >= 3;
 const featureImage = getPostImage(post.featureImage);
 const transitionName = getPostTransitionName(post);
@@ -50,8 +51,9 @@ const formatNavDate = (navPost: BlogPost) =>
       <figure class='post-feature'>
         <Image
           src={featureImage}
-          widths={[480, 720, 920, 1380]}
-          sizes='(max-width: 980px) 100vw, 920px'
+          width={Math.min(featureImage.width, 920)}
+          widths={[480, 720, 920, 1380, 1840]}
+          sizes='min(920px, calc(100vw - clamp(36px, 8vw, 96px)))'
           format='webp'
           alt=''
           loading='eager'

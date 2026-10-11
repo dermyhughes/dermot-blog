@@ -4,6 +4,8 @@ import { getAllPosts, getSiteSettings } from '../lib/content-data';
 import type { BlogPost } from '../lib/content-types';
 import { siteUrl, withSiteUrl } from '../lib/site';
 import siteConfig from '../utils/siteConfig';
+import { getShareImage } from '../lib/post-images';
+import optimizeContentImages from '../lib/content-images';
 
 export const prerender = true;
 
@@ -17,12 +19,12 @@ const escapeXml = (value: string) =>
 
 const cdata = (value: string) => `<![CDATA[${value.replace(/]]>/g, ']]]]><![CDATA[>')}]]>`;
 
-const generateItem = (post: BlogPost) => {
+const generateItem = async (post: BlogPost) => {
   if (post.draft || !post.publishedAt) return '';
 
   const fallbackPath = `/${getPostTagSlug(post)}/${post.slug}/`;
   const itemUrl = post.canonicalUrl || withSiteUrl(fallbackPath) || '';
-  const html = post.html || '';
+  const html = await optimizeContentImages(post.html);
   const htmlContent = load(html, {
     decodeEntities: false,
     xmlMode: true,
@@ -30,13 +32,25 @@ const generateItem = (post: BlogPost) => {
 
   const customElements: string[] = [];
 
-  if (post.featureImage) {
-    const imageUrl = withSiteUrl(`/images/posts/${post.featureImage}`) || '';
+  const featureImage = await getShareImage(post.featureImage);
+  if (featureImage) {
+    const imageUrl = withSiteUrl(featureImage.src) || '';
     customElements.push(`<media:content url="${escapeXml(imageUrl)}" medium="image" />`);
 
-    htmlContent('p').first().before(`<img src="${imageUrl}" />`);
-    htmlContent('img').attr('alt', post.title);
+    htmlContent('p')
+      .first()
+      .before(htmlContent('<img />').attr({ src: imageUrl, alt: post.title }));
   }
+
+  htmlContent('img').each((_, element) => {
+    const image = htmlContent(element);
+    const src = image.attr('src');
+    if (src && !/^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(src)) {
+      image.attr('src', withSiteUrl(src) || src);
+    }
+    // Feed readers need absolute URLs; the bounded src is sufficient here.
+    image.removeAttr('srcset').removeAttr('sizes').removeAttr('loading');
+  });
 
   customElements.push(`<content:encoded>${cdata(htmlContent.html() || '')}</content:encoded>`);
 
@@ -62,7 +76,7 @@ export async function GET() {
 
   const siteTitle = settings.title || 'No Title';
   const siteDescription = settings.description || 'No Description';
-  const items = posts.map(generateItem).join('\n');
+  const items = (await Promise.all(posts.map(generateItem))).join('\n');
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:media="http://search.yahoo.com/mrss/">

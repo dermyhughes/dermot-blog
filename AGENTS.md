@@ -59,7 +59,9 @@ All URLs use trailing slashes (enforced in `astro.config.mjs`).
 
 `src/lib/enhance-content.ts` — Build-time enrichment of post/page HTML (cheerio): heading ids + anchor links + TOC extraction, hardened external links, code blocks wrapped in copyable "code frames". Applied in `PostArticle` (posts, with TOC) and `ArticleContent` (pages).
 
-`src/lib/post-images.ts` — Resolves a feature-image filename to its `src/assets/posts/` module via `import.meta.glob`, for Astro's `<Image>` component (WebP, responsive `srcset`). Inline body images referenced in post HTML live in `public/images/posts/` instead — `set:html` content can't use `<Image>`, so those render at original resolution.
+`src/lib/post-images.ts` — Resolves feature-image filenames in `src/assets/posts/` for Astro's `<Image>` (responsive WebP) and generates social/RSS images. Only article feature images load eagerly; feed cards load lazily.
+
+`src/lib/content-images.ts` — Imports inline images from `public/images/posts/` and optimises post/page HTML before `enhanceContent`: responsive WebP, intrinsic dimensions, lazy loading. SVGs stay vector. Public originals remain available at their existing URLs. See README's image guidance when adding images.
 
 `src/lib/site.ts` — Canonical URL construction from `SITEURL`.
 
